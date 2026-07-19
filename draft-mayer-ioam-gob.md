@@ -38,6 +38,10 @@ author:
     ins: "J. Iurman"
     organization: "University of Liege"
     email: "justin.iurman@uliege.be"
+  - name: "Diego R. Lopez"
+    ins: "D. R. Lopez"
+    organization: "Telefonica, I+D"
+    email: "diego.r.lopez@telefonica.com"
 
 normative:
   RFC8200:
