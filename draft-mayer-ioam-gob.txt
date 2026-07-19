@@ -8,6 +8,8 @@ Intended status: Experimental                                 S. Salsano
 Expires: 20 January 2027                Univ. of Rome Tor Vergata / CNIT
                                                                J. Iurman
                                                      University of Liege
+                                                             D. R. Lopez
+                                                         Telefonica, I+D
                                                             19 July 2026
 
 
@@ -905,3 +907,8 @@ Authors' Addresses
    Justin Iurman
    University of Liege
    Email: justin.iurman@uliege.be
+
+
+   Diego R. Lopez
+   Telefonica, I+D
+   Email: diego.r.lopez@telefonica.com
