@@ -40,7 +40,7 @@ author:
     email: "justin.iurman@uliege.be"
   - name: "Diego R. Lopez"
     ins: "D. R. Lopez"
-    organization: "Telefonica, I+D"
+    organization: "Telefonica"
     email: "diego.r.lopez@telefonica.com"
 
 normative:
