@@ -9,7 +9,7 @@ Expires: 20 January 2027                Univ. of Rome Tor Vergata / CNIT
                                                                J. Iurman
                                                      University of Liege
                                                              D. R. Lopez
-                                                         Telefonica, I+D
+                                                              Telefonica
                                                             19 July 2026
 
 
@@ -910,5 +910,5 @@ Authors' Addresses
 
 
    Diego R. Lopez
-   Telefonica, I+D
+   Telefonica
    Email: diego.r.lopez@telefonica.com
