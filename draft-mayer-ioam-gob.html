@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Global Opaque Block for IOAM Pre-allocated Trace Option</title>
+<meta content="Andrea Mayer" name="author">
+<meta content="Stefano Salsano" name="author">
+<meta content="Justin Iurman" name="author">
+<meta content="
+       Extensible metadata carried within the IOAM Pre-allocated Trace Option
+(PTO) can support packet-level, flow-level, or path-level processing
+beyond per-node trace data. This document defines the Global Opaque
+Block (GOB), an extension to the IOAM PTO that introduces a single
+pre-allocated global metadata region placed at the tail of the option,
+after the pre-allocated node data space. Since the PTO node data list
+is populated from the tail of the node data space toward its head,
+under the control of the RemainingLen field, legacy IOAM transit nodes
+can never reach the GOB region: the extension is transparent to such
+nodes by construction, and only the decapsulating node or collector
+needs to be GOB-aware. The GOB carries an explicit length and schema
+identifier in a trailer word, preserves the pre-allocated PTO
+processing model, and can be used to transport Extensible In-band
+Processing (EIP) Information Elements or other structured metadata
+formats. 
+    " name="description">
+<meta content="xml2rfc 3.34.0" name="generator">
+<meta content="IOAM" name="keyword">
+<meta content="IPv6" name="keyword">
+<meta content="In-band telemetry" name="keyword">
+<meta content="Metadata" name="keyword">
+<meta content="draft-mayer-ioam-gob-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.34.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.10.1
+    pycountry 24.6.1
+    PyYAML 6.0.3
+    requests 2.33.1
+    wcwidth 0.8.2
+-->
+<link href="draft-mayer-ioam-gob.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
+}
+svg {
+  display: block;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
+}
+.alignCenter {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+      float: none;
+    }
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a {
+  text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
+}
+.iref + a[href].internal {
+  color: var(--text-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
+  }
+  @media print {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+  & .prepared {
+    float: right;
+  }
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
+  }
+}
+
+/* Comments */
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
+      }
+    }
+    & a.toplink {
+      float: right;
+    }
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
+    }
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc {
+    page-break-before: always;
+    border-top: none;
+    padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">IOAM GOB</td>
+<td class="right">July 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Mayer, et al.</td>
+<td class="center">Expires 20 January 2027</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">WG Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-mayer-ioam-gob-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-07-19" class="published">19 July 2026</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Experimental</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2027-01-20">20 January 2027</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">A. Mayer</div>
+<div class="org">Univ. of Rome Tor Vergata / CNIT / Common Net</div>
+</div>
+<div class="author">
+      <div class="author-name">S. Salsano</div>
+<div class="org">Univ. of Rome Tor Vergata / CNIT</div>
+</div>
+<div class="author">
+      <div class="author-name">J. Iurman</div>
+<div class="org">University of Liege</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Global Opaque Block for IOAM Pre-allocated Trace Option</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">Extensible metadata carried within the IOAM Pre-allocated Trace Option
+(PTO) can support packet-level, flow-level, or path-level processing
+beyond per-node trace data. This document defines the Global Opaque
+Block (GOB), an extension to the IOAM PTO that introduces a single
+pre-allocated global metadata region placed at the tail of the option,
+after the pre-allocated node data space. Since the PTO node data list
+is populated from the tail of the node data space toward its head,
+under the control of the RemainingLen field, legacy IOAM transit nodes
+can never reach the GOB region: the extension is transparent to such
+nodes by construction, and only the decapsulating node or collector
+needs to be GOB-aware. The GOB carries an explicit length and schema
+identifier in a trailer word, preserves the pre-allocated PTO
+processing model, and can be used to transport Extensible In-band
+Processing (EIP) Information Elements or other structured metadata
+formats.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://eip-home.github.io/ioam-gob/draft-mayer-ioam-gob.html">https://eip-home.github.io/ioam-gob/draft-mayer-ioam-gob.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-mayer-ioam-gob/">https://datatracker.ietf.org/doc/draft-mayer-ioam-gob/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        EIP SIG mailing list (<span><a href="mailto:eip@cnit.it">mailto:eip@cnit.it</a></span>),
+        which is archived at <span><a href="http://postino.cnit.it/cgi-bin/mailman/private/eip/">http://postino.cnit.it/cgi-bin/mailman/private/eip/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/eip-home/ioam-gob">https://github.com/eip-home/ioam-gob</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 20 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2026 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-design-overview" class="internal xref">Design Overview</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-gob-format" class="internal xref">GOB Format</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-pto-layout-with-gob" class="internal xref">PTO Layout with GOB</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-g-bit-and-ver-field" class="internal xref">G Bit and Ver Field</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-gob-trailer-fields" class="internal xref">GOB Trailer Fields</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-byte-level-layout" class="internal xref">Byte-Level Layout</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-length-and-alignment-rules" class="internal xref">Length and Alignment Rules</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-gob-length" class="internal xref">GOB Length</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-internal-pto-offsets" class="internal xref">Internal PTO Offsets</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-ioam-option-length-and-hop-" class="internal xref">IOAM Option Length and Hop-by-Hop Header Length</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-alignment-semantics" class="internal xref">Alignment Semantics</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-preservation-of-pto-semanti" class="internal xref">Preservation of PTO Semantics</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-backward-compatibility" class="internal xref">Backward Compatibility</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-structural-transparency-to-" class="internal xref">Structural Transparency to Legacy Transit Nodes</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-overflow-behavior" class="internal xref">Overflow Behavior</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-gob-only-mode" class="internal xref">GOB-Only Mode</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
+                <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-legacy-decapsulating-nodes-" class="internal xref">Legacy Decapsulating Nodes and Collectors</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.5">
+                <p id="section-toc.1-1.6.2.5.1"><a href="#section-6.5" class="auto internal xref">6.5</a>.  <a href="#name-path-mtu" class="internal xref">Path MTU</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-processing-semantics" class="internal xref">Processing Semantics</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-ingress-node-behavior" class="internal xref">Ingress Node Behavior</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-transit-node-behavior" class="internal xref">Transit Node Behavior</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-egress-or-collector-behavio" class="internal xref">Egress or Collector Behavior</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-relation-to-pto-semantics" class="internal xref">Relation to PTO Semantics</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-schema-semantics-and-extens" class="internal xref">Schema Semantics and Extensibility</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-integration-with-eip" class="internal xref">Integration with EIP</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The IOAM Pre-allocated Trace Option (PTO) defined in <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> and
+<span>[<a href="#RFC9486" class="cite xref">RFC9486</a>]</span> provides a structured way to carry in-band operational and
+telemetry information along a packet path. In the PTO model, the
+encapsulating node pre-allocates space for node data that can be filled
+by IOAM-capable nodes along the path.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This document defines an extension to the IOAM PTO called the Global
+Opaque Block (GOB). The GOB is a global metadata region that appears
+once in the PTO, at the tail of the option, after the pre-allocated
+node data space. The GOB is identified by a presence bit in the PTO
+header and carries its own length and schema fields in the last
+4-octet word of the option, referred to as the GOB Trailer.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">The GOB enables the carriage of structured global metadata within the
+IOAM PTO, while preserving the existing PTO processing model for
+per-node trace data. In particular, the GOB can carry Extensible
+In-band Processing (EIP) Information Elements or other schema-driven
+metadata formats, without modifying the semantics of the node data list.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">The placement of the GOB at the tail of the option makes it transparent
+to legacy IOAM transit nodes. In the PTO, the node data list is
+populated from the tail of the pre-allocated node data space toward its
+head, at offsets derived from the RemainingLen field (Section 4.4.1 of
+<span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>). A compliant legacy node therefore never writes beyond the
+node data space and cannot reach the GOB region that follows it. Only
+the decapsulating node or the collector needs to be GOB-aware. This
+property is analyzed in detail in <a href="#backward-compatibility" class="auto internal xref">Section 6</a>.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">The GOB is pre-allocated by the encapsulating node. Transit nodes <span class="bcp14">MAY</span>
+read or update the GOB payload, subject to the bounds established at
+encapsulation time, but they <span class="bcp14">MUST NOT</span> alter the overall GOB size or the
+layout of the enclosing PTO option.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">This document specifies the GOB format, length and alignment rules, and
+processing behavior for encapsulating, transit, and egress or collector
+nodes.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">An implementation and experimental evaluation of the proposed GOB approach
+within the Linux IOAM framework are described in <span>[<a href="#mayer26noms" class="cite xref">mayer26noms</a>]</span>.<a href="#section-1-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The following terms are used in this document:<a href="#section-2-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-2-3">
+        <dt id="section-2-3.1">GOB:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.2">
+          <p id="section-2-3.2.1">Global Opaque Block. A structured global metadata region inserted into
+the IOAM PTO.<a href="#section-2-3.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.3">GOB Trailer:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.4">
+          <p id="section-2-3.4.1">The 4-octet trailer of the GOB, carried as the last word of the IOAM
+option and containing the GOB Len and Schema fields.<a href="#section-2-3.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.5">GOB Payload:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.6">
+          <p id="section-2-3.6.1">The payload that immediately precedes the GOB Trailer. Its size is
+determined by the GOB Len field.<a href="#section-2-3.6.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.7">Node Data Space:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.8">
+          <p id="section-2-3.8.1">The pre-allocated region that follows the PTO fixed header and hosts
+the Node Data List. Its size is set at encapsulation time via the
+RemainingLen field.<a href="#section-2-3.8.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.9">PTO:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.10">
+          <p id="section-2-3.10.1">The IOAM Pre-allocated Trace Option defined in <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> and
+<span>[<a href="#RFC9486" class="cite xref">RFC9486</a>]</span>.<a href="#section-2-3.10.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.11">Node Data List:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.12">
+          <p id="section-2-3.12.1">The sequence of pre-allocated per-node data slots defined by the PTO
+format.<a href="#section-2-3.12.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.13">Ingress Node:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.14">
+          <p id="section-2-3.14.1">The encapsulating node that inserts the IOAM PTO and, when present,
+allocates and initializes the GOB.<a href="#section-2-3.14.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.15">Transit Node:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.16">
+          <p id="section-2-3.16.1">An IOAM-capable node along the path that may process the PTO and may
+read or update the GOB payload.<a href="#section-2-3.16.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.17">Egress or Collector Node:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.18">
+          <p id="section-2-3.18.1">A node that removes, terminates, exports, or otherwise interprets the
+IOAM information carried in the packet.<a href="#section-2-3.18.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-3.19">Schema:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-3.20">
+          <p id="section-2-3.20.1">A 24-bit identifier that specifies how the GOB Payload is to be
+interpreted.<a href="#section-2-3.20.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="design-overview">
+<section id="section-3">
+      <h2 id="name-design-overview">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-design-overview" class="section-name selfRef">Design Overview</a>
+      </h2>
+<p id="section-3-1">The GOB extends the IOAM PTO with a global metadata area that is
+logically distinct from the per-node node data list. It is intended for
+metadata that applies to the packet, flow, or path as a whole, rather
+than to a specific transit node.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The GOB appears at most once in a PTO option. When present, it is
+placed at the tail of the option, after the pre-allocated node data
+space. The GOB consists of a variable-length payload followed by a
+fixed 4-octet trailer, which is the last word of the IOAM option and
+carries the GOB length and schema identifier. The GOB is located from
+the end of the option, using the IOAM option length; any padding used
+to align the enclosing Hop-by-Hop Options header lies outside the IOAM
+option and does not affect GOB location.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The GOB preserves the pre-allocated nature of the PTO model. The ingress
+node allocates the GOB space at encapsulation time and determines its
+size, its schema, and the overall PTO layout. GOB-aware transit nodes
+<span class="bcp14">MAY</span> modify the contents of the GOB payload, but <span class="bcp14">MUST NOT</span> modify the GOB
+Trailer. Legacy transit nodes require no modification: they process the
+node data space according to <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> and never access the GOB.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">The GOB is intended to support structured metadata formats. One relevant
+use case is the carriage of Extensible In-band Processing (EIP)
+Information Elements, but the mechanism is not restricted to EIP and may
+be used with other schema-driven payload formats.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">The addition of the GOB does not change the semantics of the per-node
+node data list. The GOB complements the PTO by adding a global opaque
+area while leaving the existing per-node trace structure intact.<a href="#section-3-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="gob-format">
+<section id="section-4">
+      <h2 id="name-gob-format">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-gob-format" class="section-name selfRef">GOB Format</a>
+      </h2>
+<div id="pto-layout-with-gob">
+<section id="section-4.1">
+        <h3 id="name-pto-layout-with-gob">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-pto-layout-with-gob" class="section-name selfRef">PTO Layout with GOB</a>
+        </h3>
+<p id="section-4.1-1">When the Global Opaque Block (GOB) is present, the IOAM
+Pre-allocated Trace Option (PTO) is extended by appending a single GOB
+at the tail of the option, after the pre-allocated Node Data Space.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">The resulting layout is:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.1-3">
+<li id="section-4.1-3.1">
+            <p id="section-4.1-3.1.1">PTO fixed header<a href="#section-4.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-3.2">
+            <p id="section-4.1-3.2.1">Node Data Space (hosting the Node Data List)<a href="#section-4.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-3.3">
+            <p id="section-4.1-3.3.1">GOB Payload<a href="#section-4.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-3.4">
+            <p id="section-4.1-3.4.1">GOB Trailer<a href="#section-4.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-3.5">
+            <p id="section-4.1-3.5.1">Tail padding, if required to satisfy alignment of the enclosing
+Hop-by-Hop Options header; such padding is outside the IOAM option<a href="#section-4.1-3.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-4.1-4">The GOB is indicated by the G bit in the PTO fixed header. If the G bit
+is clear, no GOB is present and PTO processing follows the base PTO
+format.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">The GOB appears at most once in a PTO option.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="g-bit-and-ver-field">
+<section id="section-4.2">
+        <h3 id="name-g-bit-and-ver-field">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-g-bit-and-ver-field" class="section-name selfRef">G Bit and Ver Field</a>
+        </h3>
+<p id="section-4.2-1">The presence of the GOB is signaled in the last octet of the second
+word of the PTO fixed header, defined as Reserved in <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>. When
+the GOB extension is in use, this octet is structured as 5 reserved
+bits, followed by a 2-bit Ver field and by the G bit in the least
+significant position.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4.2-2">
+          <dt id="section-4.2-2.1">G bit:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.2-2.2">
+            <p id="section-4.2-2.2.1">When set to 1, a GOB is present at the tail of the option. When set
+to 0, no GOB is present and the option follows the base PTO format.<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.2-2.3">Ver:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.2-2.4">
+            <p id="section-4.2-2.4.1">A 2-bit field carrying the version of the GOB extension. This
+document defines version 0. An encapsulating node inserting a GOB
+<span class="bcp14">MUST</span> set Ver to 0. A GOB-aware node that receives a PTO with the G
+bit set and an unsupported Ver value <span class="bcp14">MUST NOT</span> parse or modify the
+GOB.<a href="#section-4.2-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<p id="section-4.2-3">The remaining 5 bits are reserved: they <span class="bcp14">MUST</span> be set to zero by the
+encapsulating node and ignored on receipt.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="gob-trailer-fields">
+<section id="section-4.3">
+        <h3 id="name-gob-trailer-fields">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-gob-trailer-fields" class="section-name selfRef">GOB Trailer Fields</a>
+        </h3>
+<p id="section-4.3-1">The GOB Trailer is 4 octets long and contains the following fields:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4.3-2">
+          <dt id="section-4.3-2.1">GOB Len:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-2.2">
+            <p id="section-4.3-2.2.1">An 8-bit field that specifies the size of the GOB Payload in units of
+4 octets.<a href="#section-4.3-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.3-2.3">Schema:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-2.4">
+            <p id="section-4.3-2.4.1">A 24-bit field that identifies the format of the GOB Payload.<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<p id="section-4.3-3">The total size of the GOB is therefore:<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-4">
+<pre>
+GOB_PLEN = GOB_Len * 4
+GOB_SIZE = 4 + GOB_PLEN
+</pre><a href="#section-4.3-4" class="pilcrow">¶</a>
+</div>
+<p id="section-4.3-5">where the 4 additional octets correspond to the GOB Trailer itself. The
+GOB Payload consists of the <code>GOB_PLEN</code> octets that immediately precede
+the GOB Trailer.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">The Schema field allows the GOB Payload to be interpreted according to
+a structured format. One important use case is the carriage of
+Extensible In-band Processing (EIP) Information Elements, but the GOB
+is not limited to EIP and may carry other schema-driven metadata
+formats.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="byte-level-layout">
+<section id="section-4.4">
+        <h3 id="name-byte-level-layout">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-byte-level-layout" class="section-name selfRef">Byte-Level Layout</a>
+        </h3>
+<p id="section-4.4-1">The following figure shows the byte-level layout of the IOAM PTO with
+the GOB present.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<span id="name-ioam-pto-with-global-opaque"></span><figure id="figure-1">
+          <div class="alignLeft art-text artwork" id="section-4.4-2.1">
+<pre>
+Offset      0                   1                   2                   3
+            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     40    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |   Next Header |  Hdr Ext Len  |   PadN Opt    | PadN OptLen   |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |    Opt Type   |  IOAM Opt Len |   Reserved    |   IOAM Type   |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |  Namespace-ID  (16b)          |NodeLen  | Flags |RemainingLen |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |         IOAM Trace-Type (24b)                 |Reserved |Ver|G|
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |                                                               |
+           ~                          Node Data List                       ~
+           |                                                               |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |                                                               |
+           ~                           GOB Payload                         ~
+           |                                                               |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | GOB Len (8b)  | Schema (24b)                                  |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |                           Padding                             |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-ioam-pto-with-global-opaque" class="selfRef">IOAM PTO with Global Opaque Block (GOB) at the tail</a>
+          </figcaption></figure>
+<p id="section-4.4-3">More explicitly, the internal structure is:<a href="#section-4.4-3" class="pilcrow">¶</a></p>
+<span id="name-detailed-pto-layout-with-no"></span><figure id="figure-2">
+          <div class="alignLeft art-text artwork" id="section-4.4-4.1">
+<pre>
+Offset      0                   1                   2                   3
+            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     40    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |   Next Header |  Hdr Ext Len  |   PadN Opt    | PadN OptLen   |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |    Opt Type   |  IOAM Opt Len |   Reserved    |   IOAM Type   |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+&lt;-+
+           |  Namespace-ID  (16b)          |NodeLen  | Flags |RemainingLen | |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ (A)
+           |         IOAM Trace-Type (24b)                 |Reserved |Ver|G| |
+     X     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+&lt;-+
+           |                                                               | |
+           |                       Node Data List [0]                      | |
+           |                                                               | |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ D
+           |                                                               | a
+           |                       Node Data List [1]                      | t
+           |                                                               | a
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           ~                              ...                              ~ S
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ p
+           |                                                               | a
+           |                      Node Data List [n-1]                     | c
+           |                                                               | e
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+           |                                                               | |
+           |                       Node Data List [n]                      | |
+           |                                                               | |
+     Y     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+&lt;-+
+           |                                                               | G
+           ~                           GOB Payload                         ~ O
+           |                                                               | B
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+&lt;-+
+  GOB_TRL  | GOB Len (8b)  | Schema (24b)                                  |
+     Y'    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |   PadN Opt    | PadN OptLen   |  Padding 16 bits              |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ ALG(Y',8) \_________________________8-byte aligned ________________________/
+   = Y''
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-detailed-pto-layout-with-no" class="selfRef">Detailed PTO layout with Node Data Space and tail GOB</a>
+          </figcaption></figure>
+<p id="section-4.4-5">The Node Data Space begins immediately after the PTO fixed header, at
+the same position as in the base PTO format: this is the write anchor
+used by all nodes, including legacy ones, to derive the node data
+recording offset from RemainingLen. The GOB Payload immediately follows
+the Node Data Space. The GOB Trailer is the last 4-octet word of the
+IOAM option. Any final tail padding is added only to satisfy alignment
+requirements of the enclosing Hop-by-Hop Options header and lies
+outside the IOAM option.<a href="#section-4.4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="length-and-alignment-rules">
+<section id="section-5">
+      <h2 id="name-length-and-alignment-rules">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-length-and-alignment-rules" class="section-name selfRef">Length and Alignment Rules</a>
+      </h2>
+<p id="section-5-1">This section defines the length relations used when the GOB is present
+in the IOAM PTO.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<div id="gob-length">
+<section id="section-5.1">
+        <h3 id="name-gob-length">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-gob-length" class="section-name selfRef">GOB Length</a>
+        </h3>
+<p id="section-5.1-1">The GOB Payload length is determined by the GOB Len field:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-2">
+<pre>
+GOB_PLEN = GOB_Len * 4
+</pre><a href="#section-5.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.1-3">The total GOB size, including the fixed 4-octet GOB Trailer, is:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-4">
+<pre>
+GOB_SIZE = 4 + GOB_PLEN
+</pre><a href="#section-5.1-4" class="pilcrow">¶</a>
+</div>
+<p id="section-5.1-5">The GOB Len field is set by the ingress node at encapsulation time.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">Transit nodes <span class="bcp14">MAY</span> modify the content of the GOB Payload, but <span class="bcp14">MUST NOT</span>
+modify the GOB Trailer and therefore <span class="bcp14">MUST NOT</span> alter the total GOB
+size.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="internal-pto-offsets">
+<section id="section-5.2">
+        <h3 id="name-internal-pto-offsets">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-internal-pto-offsets" class="section-name selfRef">Internal PTO Offsets</a>
+        </h3>
+<p id="section-5.2-1">Let:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-2.1">
+            <p id="section-5.2-2.1.1"><code>X</code> be the offset of the start of the Node Data Space, immediately
+following the PTO fixed header;<a href="#section-5.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-2.2">
+            <p id="section-5.2-2.2.1"><code>Y</code> be the offset immediately following the Node Data Space;<a href="#section-5.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-2.3">
+            <p id="section-5.2-2.3.1"><code>Y'</code> be the offset immediately following the GOB Trailer, that is,
+the end of the IOAM option;<a href="#section-5.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-2.4">
+            <p id="section-5.2-2.4.1"><code>Y''</code> be the IOAM option length rounded up to the next multiple of
+8 octets;<a href="#section-5.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-2.5">
+            <p id="section-5.2-2.5.1"><code>RemainingLen_init</code> be the initial value of the RemainingLen field,
+set by the ingress node at encapsulation time.<a href="#section-5.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.2-3">Then:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-4">
+<pre>
+X   = (sizeof(IOAM_TLV) - 2) + sizeof(IOAM_PTO_HDR)
+Y   = X + RemainingLen_init * 4
+Y'  = Y + GOB_SIZE
+Y'' = ALIGN(Y', 8)
+</pre><a href="#section-5.2-4" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-5">In these expressions:<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-6.1">
+            <p id="section-5.2-6.1.1"><code>sizeof(IOAM_TLV) - 2</code> excludes the <code>Option Type</code> and <code>Option Length</code>
+octets already accounted for in the option layout;<a href="#section-5.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-6.2">
+            <p id="section-5.2-6.2.1"><code>sizeof(IOAM_PTO_HDR)</code> is the fixed PTO header size;<a href="#section-5.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-6.3">
+            <p id="section-5.2-6.3.1"><code>RemainingLen</code> retains its exact meaning from <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>: it counts
+only the pre-allocated Node Data Space and does not include the GOB.<a href="#section-5.2-6.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.2-7">The Node Data Space starts immediately after the PTO fixed header and
+spans <code>RemainingLen_init * 4</code> octets. The GOB occupies the last
+<code>GOB_SIZE</code> octets of the IOAM option.<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-8">Let <code>PTO_LEN</code> be the total length of the PTO option content, from the
+beginning of the PTO fixed header to the end of the GOB Trailer, and
+let <code>RemainingLen</code> be the current (received) value of the field. The
+following validity check holds for a well-formed option at any point
+along the path:<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-9">
+<pre>
+4 * (GOB_Len + 1) &lt;= PTO_LEN - sizeof(IOAM_PTO_HDR)
+                     - RemainingLen * 4
+</pre><a href="#section-5.2-9" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-10">The check holds with equality at encapsulation time and is preserved
+along the path, since RemainingLen can only decrease. A GOB-aware node
+<span class="bcp14">MUST</span> treat the GOB as invalid if this check fails.<a href="#section-5.2-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ioam-option-length-and-hop-by-hop-header-length">
+<section id="section-5.3">
+        <h3 id="name-ioam-option-length-and-hop-">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-ioam-option-length-and-hop-" class="section-name selfRef">IOAM Option Length and Hop-by-Hop Header Length</a>
+        </h3>
+<p id="section-5.3-1">The IOAM Option Length field <span class="bcp14">MUST</span> be set to <code>Y''</code>, that is, to the total
+internal length of the IOAM option after rounding up to the required
+alignment.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">The enclosing Hop-by-Hop Options header length is derived from the total
+size of the header, including:<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.3-3.1">
+            <p id="section-5.3-3.1.1">the 2-octet <code>Next Header</code> and <code>Hdr Ext Len</code> fields;<a href="#section-5.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.3-3.2">
+            <p id="section-5.3-3.2.1">any PadN option used to align the start of the IOAM option;<a href="#section-5.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.3-3.3">
+            <p id="section-5.3-3.3.1">the IOAM option itself, including any final tail padding.<a href="#section-5.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.3-4">Let <code>HBH_LEN</code> denote the total Hop-by-Hop Options header size in octets.
+Then:<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.3-5">
+<pre>
+HBH_LEN = ALIGN(4 + sizeof(IOAM_PTO_HDR) + RemainingLen_init * 4
+                + GOB_SIZE, 8)
+</pre><a href="#section-5.3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-5.3-6">where the leading 4 octets account for:<a href="#section-5.3-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.3-7.1">
+            <p id="section-5.3-7.1.1">2 octets for <code>Next Header</code> and <code>Hdr Ext Len</code>;<a href="#section-5.3-7.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.3-7.2">
+            <p id="section-5.3-7.2.1">2 octets for the PadN option that aligns the IOAM option start.<a href="#section-5.3-7.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.3-8">The IPv6 <code>Hdr Ext Len</code> field is encoded as:<a href="#section-5.3-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.3-9">
+<pre>
+Hdr Ext Len = HBH_LEN / 8 - 1
+</pre><a href="#section-5.3-9" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="alignment-semantics">
+<section id="section-5.4">
+        <h3 id="name-alignment-semantics">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-alignment-semantics" class="section-name selfRef">Alignment Semantics</a>
+        </h3>
+<p id="section-5.4-1">As specified in <span>[<a href="#RFC8200" class="cite xref">RFC8200</a>]</span>, the Hop-by-Hop Options header is encoded so
+that its total length is a multiple of 8 octets, and the Hdr Ext Len
+field carries that length in 8-octet units, not including the first
+8 octets.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.4-2">The final tail padding used to align the enclosing Hop-by-Hop Options
+header to an 8-octet boundary is not part of the GOB and is not part of
+the Node Data List.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
+<p id="section-5.4-3">More specifically:<a href="#section-5.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.4-4.1">
+            <p id="section-5.4-4.1.1"><code>Y</code> identifies the end of the Node Data Space;<a href="#section-5.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.4-4.2">
+            <p id="section-5.4-4.2.1"><code>Y'</code> identifies the end of the GOB and of the IOAM option;<a href="#section-5.4-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.4-4.3">
+            <p id="section-5.4-4.3.1"><code>Y''</code> identifies the aligned end, including padding that lies outside
+the IOAM option.<a href="#section-5.4-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.4-5">The difference between <code>Y'</code> and <code>Y''</code> is due only to final alignment
+padding and does not carry GOB or node-data semantics. The GOB is
+always located relative to the end of the IOAM option as given by the
+IOAM option length, never relative to the end of the Hop-by-Hop Options
+header.<a href="#section-5.4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="preservation-of-pto-semantics">
+<section id="section-5.5">
+        <h3 id="name-preservation-of-pto-semanti">
+<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-preservation-of-pto-semanti" class="section-name selfRef">Preservation of PTO Semantics</a>
+        </h3>
+<p id="section-5.5-1">The presence of the GOB does not alter the semantics of <code>RemainingLen</code>
+or the pre-allocated nature of the PTO. In particular, <code>RemainingLen</code>
+counts only the Node Data Space, exactly as in <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>, and the
+Node Data Space starts at the same offset as in the base PTO format.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.5-2">The ingress node determines, at encapsulation time:<a href="#section-5.5-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.5-3.1">
+            <p id="section-5.5-3.1.1">the size of the Node Data Space, via <code>RemainingLen_init</code>;<a href="#section-5.5-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.5-3.2">
+            <p id="section-5.5-3.2.1">the GOB size;<a href="#section-5.5-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.5-3.3">
+            <p id="section-5.5-3.3.1">the final aligned IOAM option length.<a href="#section-5.5-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.5-4">The following budget constraints apply:<a href="#section-5.5-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.5-5.1">
+            <p id="section-5.5-5.1.1"><code>RemainingLen_init &lt;= 127</code>, due to the 7-bit RemainingLen field; note
+that the GOB does not consume this budget;<a href="#section-5.5-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.5-5.2">
+            <p id="section-5.5-5.2.1">the total PTO option content, <code>sizeof(IOAM_PTO_HDR) +
+RemainingLen_init * 4 + GOB_SIZE</code>, is bounded by the length limits of
+the enclosing encapsulation (approximately 253 octets for the IPv6
+Hop-by-Hop encapsulation of <span>[<a href="#RFC9486" class="cite xref">RFC9486</a>]</span>).<a href="#section-5.5-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.5-6">Transit nodes operate only within the pre-allocated bounds of the Node
+Data Space and, for GOB-aware nodes, of the GOB Payload, and <span class="bcp14">MUST NOT</span>
+change the overall layout of the PTO option.<a href="#section-5.5-6" class="pilcrow">¶</a></p>
+<p id="section-5.5-7">In this way, the pre-allocated model of the PTO is preserved while
+extending the option with a structured global metadata region.<a href="#section-5.5-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="backward-compatibility">
+<section id="section-6">
+      <h2 id="name-backward-compatibility">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-backward-compatibility" class="section-name selfRef">Backward Compatibility</a>
+      </h2>
+<p id="section-6-1">This section shows that the GOB is transparent to legacy IOAM transit
+nodes, that is, nodes that implement <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> without GOB support.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div id="structural-transparency-to-legacy-transit-nodes">
+<section id="section-6.1">
+        <h3 id="name-structural-transparency-to-">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-structural-transparency-to-" class="section-name selfRef">Structural Transparency to Legacy Transit Nodes</a>
+        </h3>
+<p id="section-6.1-1">In the Pre-allocated Trace-Option, the node data list is populated from
+the tail of the data space toward its head. Section 4.4.1 of
+<span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> specifies that RemainingLen "is used to derive the offset
+in data space to record the node data element", and that "the recording
+of the node data element would start from RemainingLen - NodeLen - size
+of (opaque snapshot) in 4-octet units".<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">A compliant transit node therefore only writes within the interval:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6.1-3">
+<pre>
+[X + (RemainingLen - NodeLen - SoS) * 4, X + RemainingLen * 4)
+</pre><a href="#section-6.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-6.1-4">where <code>X</code> is the start of the data space (<a href="#internal-pto-offsets" class="auto internal xref">Section 5.2</a>) and
+<code>SoS</code> is the size of the Opaque State Snapshot, if present. Since
+RemainingLen starts at <code>RemainingLen_init</code> and can only decrease, no
+compliant node can ever write at or beyond <code>X + RemainingLen_init * 4</code>,
+which is exactly where the GOB begins. The GOB is therefore
+unreachable by legacy transit nodes, for any number of IOAM hops on
+the path.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="overflow-behavior">
+<section id="section-6.2">
+        <h3 id="name-overflow-behavior">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-overflow-behavior" class="section-name selfRef">Overflow Behavior</a>
+        </h3>
+<p id="section-6.2-1">When a transit node finds that RemainingLen is smaller than the space
+required for its node data element, it sets the Overflow bit (O-bit)
+and does not record any data (<span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>). With the GOB at the tail of
+the option, this behavior is preserved exactly: overflow is signaled
+precisely when the Node Data Space is exhausted, and the GOB is not
+affected. The ingress node <span class="bcp14">SHOULD</span> set <code>RemainingLen_init = h * NodeLen</code>
+for the expected number <code>h</code> of IOAM-capable hops; if the path contains
+more IOAM hops than expected, the additional hops do not record data
+and the O-bit is set, while the GOB remains intact.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">The use of the variable-length Opaque State Snapshot (bit 22 of the
+IOAM Trace-Type) consumes RemainingLen faster than the fixed NodeLen
+accounting and thus affects the dimensioning of <code>RemainingLen_init</code>,
+but does not affect the integrity of the GOB.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="gob-only-mode">
+<section id="section-6.3">
+        <h3 id="name-gob-only-mode">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-gob-only-mode" class="section-name selfRef">GOB-Only Mode</a>
+        </h3>
+<p id="section-6.3-1">An ingress node <span class="bcp14">MAY</span> set <code>RemainingLen_init = 0</code>, resulting in an option
+that carries only the GOB and no node data. In this case, a legacy IOAM
+transit node finds no room for its node data element and sets the O-bit
+(or skips the option); the GOB is not affected.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="legacy-decapsulating-nodes-and-collectors">
+<section id="section-6.4">
+        <h3 id="name-legacy-decapsulating-nodes-">
+<a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-legacy-decapsulating-nodes-" class="section-name selfRef">Legacy Decapsulating Nodes and Collectors</a>
+        </h3>
+<p id="section-6.4-1">A legacy decapsulating node removes the whole IOAM option; the GOB is
+lost but packet forwarding is unaffected. A legacy collector that
+parses the raw option content and assumes that node data extends to
+the end of the option would misinterpret the GOB as the oldest node
+data elements. Within a GOB deployment domain, the decapsulating node
+and the collector are GOB-aware by definition, so this situation only
+arises from misconfiguration. Note that, in that case, the size of the
+region interpreted as node data would generally not be an integer
+multiple of <code>NodeLen * 4</code>, which provides a detection opportunity.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="path-mtu">
+<section id="section-6.5">
+        <h3 id="name-path-mtu">
+<a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-path-mtu" class="section-name selfRef">Path MTU</a>
+        </h3>
+<p id="section-6.5-1">Section 4.4.1 of <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> relates RemainingLen to the path MTU for
+the node data space. An ingress node inserting a GOB <span class="bcp14">MUST</span> also account
+for <code>GOB_SIZE</code> octets when assessing path MTU constraints.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="processing-semantics">
+<section id="section-7">
+      <h2 id="name-processing-semantics">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-processing-semantics" class="section-name selfRef">Processing Semantics</a>
+      </h2>
+<div id="ingress-node-behavior">
+<section id="section-7.1">
+        <h3 id="name-ingress-node-behavior">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-ingress-node-behavior" class="section-name selfRef">Ingress Node Behavior</a>
+        </h3>
+<p id="section-7.1-1">An ingress node that inserts a GOB into the PTO:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1-2.1">
+            <p id="section-7.1-2.1.1"><span class="bcp14">MUST</span> set the G bit to 1 and the Ver field to 0;<a href="#section-7.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.2">
+            <p id="section-7.1-2.2.1"><span class="bcp14">MUST</span> allocate the full GOB space (Payload and Trailer) at the tail
+of the option at encapsulation time;<a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.3">
+            <p id="section-7.1-2.3.1"><span class="bcp14">MUST</span> set the GOB Len and Schema fields in the GOB Trailer;<a href="#section-7.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.4">
+            <p id="section-7.1-2.4.1"><span class="bcp14">MUST</span> set <code>RemainingLen_init</code> according to the size of the Node Data
+Space only, without including the GOB (e.g., <code>RemainingLen_init =
+h * NodeLen</code> for <code>h</code> expected IOAM hops);<a href="#section-7.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.5">
+            <p id="section-7.1-2.5.1"><span class="bcp14">MUST</span> determine the final PTO layout, including the Node Data Space,
+the GOB, and any required tail padding;<a href="#section-7.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.6">
+            <p id="section-7.1-2.6.1"><span class="bcp14">MUST</span> account for the GOB size when assessing path MTU constraints.<a href="#section-7.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-7.1-3">The ingress node <span class="bcp14">MAY</span> initialize the GOB Payload with structured
+metadata, zero values, or other schema-defined initial content.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="transit-node-behavior">
+<section id="section-7.2">
+        <h3 id="name-transit-node-behavior">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-transit-node-behavior" class="section-name selfRef">Transit Node Behavior</a>
+        </h3>
+<p id="section-7.2-1">Legacy IOAM transit nodes require no modification: they process the
+Node Data Space according to the procedures of <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> and, as
+shown in <a href="#backward-compatibility" class="auto internal xref">Section 6</a>, never access the GOB.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">A GOB-aware transit node that processes a PTO containing a GOB:<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2-3.1">
+            <p id="section-7.2-3.1.1"><span class="bcp14">MUST</span> verify the validity check of <a href="#internal-pto-offsets" class="auto internal xref">Section 5.2</a> before
+accessing the GOB;<a href="#section-7.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.2">
+            <p id="section-7.2-3.2.1"><span class="bcp14">MAY</span> read the GOB Payload;<a href="#section-7.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.3">
+            <p id="section-7.2-3.3.1"><span class="bcp14">MAY</span> update fields within the GOB Payload, subject to the schema in
+use;<a href="#section-7.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.4">
+            <p id="section-7.2-3.4.1"><span class="bcp14">MUST NOT</span> modify the GOB Trailer (GOB Len and Schema fields);<a href="#section-7.2-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.5">
+            <p id="section-7.2-3.5.1"><span class="bcp14">MUST NOT</span> modify PTO fixed-header fields, other than Flags and
+RemainingLen as allowed by <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>;<a href="#section-7.2-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.6">
+            <p id="section-7.2-3.6.1"><span class="bcp14">MUST NOT</span> change the overall size or layout of the PTO option.<a href="#section-7.2-3.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-7.2-4">A transit node <span class="bcp14">MUST</span> confine any GOB update to the pre-allocated GOB
+Payload bounds established by the ingress node.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="egress-or-collector-behavior">
+<section id="section-7.3">
+        <h3 id="name-egress-or-collector-behavio">
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-egress-or-collector-behavio" class="section-name selfRef">Egress or Collector Behavior</a>
+        </h3>
+<p id="section-7.3-1">An egress or collector node that processes a PTO with the G bit set
+locates the GOB Trailer as the last 4-octet word of the IOAM option,
+and the GOB Payload as the <code>GOB_PLEN</code> octets that immediately precede
+it. The node data recorded along the path occupies the region between
+<code>X + RemainingLen * 4</code>, where RemainingLen is the received value, and
+the start of the GOB Payload.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.3-2">Such a node:<a href="#section-7.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.3-3.1">
+            <p id="section-7.3-3.1.1"><span class="bcp14">MUST</span> verify the validity check of <a href="#internal-pto-offsets" class="auto internal xref">Section 5.2</a>; if the
+check fails, the GOB <span class="bcp14">MUST</span> be considered invalid and <span class="bcp14">MUST NOT</span> be
+parsed;<a href="#section-7.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.3-3.2">
+            <p id="section-7.3-3.2.1"><span class="bcp14">MAY</span> parse the GOB Payload according to the Schema field;<a href="#section-7.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.3-3.3">
+            <p id="section-7.3-3.3.1"><span class="bcp14">MAY</span> export the GOB content as structured metadata or as raw bytes;<a href="#section-7.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.3-3.4">
+            <p id="section-7.3-3.4.1"><span class="bcp14">MAY</span> ignore the GOB Payload if the Schema value is unknown or not
+supported.<a href="#section-7.3-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-7.3-4">If the Schema value is unknown, the node <span class="bcp14">MUST NOT</span> infer semantics beyond
+the presence and length of the GOB.<a href="#section-7.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="relation-to-pto-semantics">
+<section id="section-8">
+      <h2 id="name-relation-to-pto-semantics">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-relation-to-pto-semantics" class="section-name selfRef">Relation to PTO Semantics</a>
+      </h2>
+<p id="section-8-1">The GOB preserves the pre-allocated semantics of the IOAM PTO.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">The ingress node continues to determine the overall PTO allocation at
+encapsulation time. This includes the size of the node data list and,
+when present, the size of the GOB. Transit nodes operate only within the
+pre-allocated space and do not change the overall layout of the PTO.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">The Node Data List retains its existing semantics and processing model.
+The GOB does not redefine the per-node trace data structure and does not
+replace the node data list. Instead, it introduces a distinct global
+metadata region placed after the node data space, at the tail of the
+option.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">In this sense, the pre-allocated nature of the PTO applies both to the
+per-node trace space and to the GOB. The GOB extends the PTO with a
+global opaque area while preserving the original PTO processing model.<a href="#section-8-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="schema-semantics-and-extensibility">
+<section id="section-9">
+      <h2 id="name-schema-semantics-and-extens">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-schema-semantics-and-extens" class="section-name selfRef">Schema Semantics and Extensibility</a>
+      </h2>
+<p id="section-9-1">The Schema field identifies the format of the GOB Payload.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">A Schema value may identify:<a href="#section-9-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9-3.1">
+          <p id="section-9-3.1.1">a sequence of EIP Information Elements;<a href="#section-9-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-9-3.2">
+          <p id="section-9-3.2.1">another structured metadata format defined by a specification;<a href="#section-9-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-9-3.3">
+          <p id="section-9-3.3.1">a locally defined or domain-specific format.<a href="#section-9-3.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-9-4">This document defines the GOB container, but does not define the
+internal syntax of individual schema-specific payloads. The semantics of
+the GOB Payload therefore depend on the specification associated with
+the Schema value in use.<a href="#section-9-4" class="pilcrow">¶</a></p>
+<p id="section-9-5">Future specifications may define registries, allocation policies, or
+schema-specific processing rules for GOB Payload formats.<a href="#section-9-5" class="pilcrow">¶</a></p>
+<p id="section-9-6">A Schema value of 0 indicates a locally defined or domain-specific
+format. Future specifications that define registries or allocation
+policies for Schema values <span class="bcp14">MUST</span> preserve this reservation.<a href="#section-9-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="integration-with-eip">
+<section id="section-10">
+      <h2 id="name-integration-with-eip">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-integration-with-eip" class="section-name selfRef">Integration with EIP</a>
+      </h2>
+<p id="section-10-1">One important use of the GOB is the carriage of Extensible In-band
+Processing (EIP) Information Elements.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-2">The GOB provides a natural container for EIP within the IOAM PTO because
+it offers a single global metadata region with explicit length and
+schema identification, distinct from the per-node trace data. This makes
+it suitable for metadata that is flow-level, packet-level, or path-level
+rather than node-local.<a href="#section-10-2" class="pilcrow">¶</a></p>
+<p id="section-10-3">Earlier work explored the integration of EIP into the IOAM framework
+through a different approach based on IOAM data fields
+<span>[<a href="#salsano25cscn" class="cite xref">salsano25cscn</a>]</span>. The GOB-based approach defined in this document
+provides an alternative integration model based on a pre-allocated
+global metadata region within the PTO.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-4">The GOB is a general container for structured metadata. It can carry
+EIP Information Elements, but it is not limited to EIP.<a href="#section-10-4" class="pilcrow">¶</a></p>
+<p id="section-10-5">The GOB-based integration has also been described and experimentally
+evaluated in <span>[<a href="#mayer26noms" class="cite xref">mayer26noms</a>]</span>.<a href="#section-10-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-11">
+      <h2 id="name-security-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-11-1">The GOB introduces a global metadata region that may be read or modified
+by on-path nodes. Unauthorized access to, or modification of, the GOB
+Payload can affect telemetry interpretation, service behavior, or policy
+enforcement.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">For this reason, deployments of the GOB <span class="bcp14">SHOULD</span> be limited to controlled
+or trusted domains, consistent with the limited-domain assumptions often
+applied to IOAM deployments.<a href="#section-11-2" class="pilcrow">¶</a></p>
+<p id="section-11-3">The GOB Trailer is not protected by any checksum or authentication
+mechanism. A misbehaving or malicious on-path node could corrupt the
+GOB Trailer; in particular, an inflated GOB Len value could cause a
+decapsulating node to interpret recorded node data as GOB Payload. The
+validity check of <a href="#internal-pto-offsets" class="auto internal xref">Section 5.2</a> rejects GOB sizes that are
+inconsistent with the option length and with the current RemainingLen
+value, and <span class="bcp14">MUST</span> be applied by every GOB-aware node before parsing the
+GOB. Deployments <span class="bcp14">MAY</span> additionally cross-check the received GOB Len and
+Schema values against per-namespace configuration.<a href="#section-11-3" class="pilcrow">¶</a></p>
+<p id="section-11-4">The security implications of the GOB Payload also depend on the Schema
+in use. Some schemas may carry purely observational metadata, while
+others may influence packet treatment or convey more sensitive
+information. Schema-specific specifications <span class="bcp14">SHOULD</span> describe any
+additional confidentiality, integrity, or authorization requirements.<a href="#section-11-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-12">
+      <h2 id="name-iana-considerations">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-12-1">This document defines the Global Opaque Block (GOB) as an extension to
+the IOAM Pre-allocated Trace Option.<a href="#section-12-1" class="pilcrow">¶</a></p>
+<p id="section-12-2">As discussed in <a href="#backward-compatibility" class="auto internal xref">Section 6</a>, the GOB is transparent to
+legacy IOAM transit nodes: it is placed outside the region that such
+nodes can address, and the semantics of all existing PTO fields are
+preserved. Two possible standardization approaches can be considered
+in this light.<a href="#section-12-2" class="pilcrow">¶</a></p>
+<p id="section-12-3">A first approach is to reuse the existing codepoint of the IOAM
+Pre-allocated Trace Option, defining the G bit and the Ver field within
+the Reserved octet of the PTO fixed header. Since <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> requires
+transit nodes to ignore the Reserved field, this approach does not
+affect legacy transit behavior. However, <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> also requires the
+encapsulating node to set the Reserved field to zero, so an
+encapsulating node inserting a GOB would deviate from that requirement,
+and the bits used by G and Ver could collide with future allocations of
+the Reserved field. This approach therefore requires a formal update of
+the definition of the Reserved field of the PTO.<a href="#section-12-3" class="pilcrow">¶</a></p>
+<p id="section-12-4">A second approach is to define a new codepoint for a PTO variant that
+supports the Global Opaque Block. In this case, the presence or absence
+of the GOB can still be indicated by the G bit, while the use of a
+distinct codepoint provides explicit protocol separation from the
+current PTO format and avoids any redefinition of the existing PTO
+Reserved field.<a href="#section-12-4" class="pilcrow">¶</a></p>
+<p id="section-12-5">This version of the document does not request IANA actions. Future
+versions may request updates to the relevant IOAM or IPv6 registries,
+depending on which standardization approach is selected.<a href="#section-12-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-13">
+      <h2 id="name-references">
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-13.1">
+        <h3 id="name-normative-references">
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="IANA-ioam-types">[IANA-ioam-types]</dt>
+        <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"IOAM Data Field Types"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/ioam/ioam.xhtml#data-field-types">https://www.iana.org/assignments/ioam/ioam.xhtml#data-field-types</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IANA-ipv6-parameters">[IANA-ipv6-parameters]</dt>
+        <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Internet Protocol Version 6 (IPv6) Parameters"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml">https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8200">[RFC8200]</dt>
+        <dd>
+<span class="refAuthor">Deering, S.</span> and <span class="refAuthor">R. Hinden</span>, <span class="refTitle">"Internet Protocol, Version 6 (IPv6) Specification"</span>, <span class="seriesInfo">STD 86</span>, <span class="seriesInfo">RFC 8200</span>, <span class="seriesInfo">DOI 10.17487/RFC8200</span>, <time datetime="2017-07" class="refDate">July 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8200">https://www.rfc-editor.org/rfc/rfc8200</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9197">[RFC9197]</dt>
+        <dd>
+<span class="refAuthor">Brockners, F., Ed.</span>, <span class="refAuthor">Bhandari, S., Ed.</span>, and <span class="refAuthor">T. Mizrahi, Ed.</span>, <span class="refTitle">"Data Fields for In Situ Operations, Administration, and Maintenance (IOAM)"</span>, <span class="seriesInfo">RFC 9197</span>, <span class="seriesInfo">DOI 10.17487/RFC9197</span>, <time datetime="2022-05" class="refDate">May 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9197">https://www.rfc-editor.org/rfc/rfc9197</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9486">[RFC9486]</dt>
+      <dd>
+<span class="refAuthor">Bhandari, S., Ed.</span> and <span class="refAuthor">F. Brockners, Ed.</span>, <span class="refTitle">"IPv6 Options for In Situ Operations, Administration, and Maintenance (IOAM)"</span>, <span class="seriesInfo">RFC 9486</span>, <span class="seriesInfo">DOI 10.17487/RFC9486</span>, <time datetime="2023-09" class="refDate">September 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9486">https://www.rfc-editor.org/rfc/rfc9486</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-13.2">
+        <h3 id="name-informative-references">
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="draft-eip-arch">[draft-eip-arch]</dt>
+        <dd>
+<span class="refAuthor">Salsano, S.</span>, <span class="refAuthor">ElBakoury, H.</span>, and <span class="refAuthor">D. R. Lopez</span>, <span class="refTitle">"Extensible In-band Processing (EIP) Architecture and Framework"</span>, <span class="refContent">Internet-Draft draft-eip-arch</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/draft-eip-arch/">https://datatracker.ietf.org/doc/draft-eip-arch/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="mayer26noms">[mayer26noms]</dt>
+        <dd>
+<span class="refAuthor">Mayer, A.</span>, <span class="refAuthor">Salsano, S.</span>, <span class="refAuthor">Sidoretti, G.</span>, <span class="refAuthor">Loreti, P.</span>, <span class="refAuthor">Bracciale, L.</span>, <span class="refAuthor">ElBakoury, H.</span>, and <span class="refAuthor">D. R. Lopez</span>, <span class="refTitle">"Integrating the Global Opaque Block into the IOAM Framework: A Unified Approach to In-Packet Telemetry and Metadata"</span>, <span class="refContent">IEEE/IFIP NOMS 2026</span>, <time datetime="2026" class="refDate">2026</time>. </dd>
+<dd class="break"></dd>
+<dt id="salsano25cscn">[salsano25cscn]</dt>
+      <dd>
+<span class="refAuthor">Salsano, S.</span>, <span class="refAuthor">Mayer, A.</span>, <span class="refAuthor">Sidoretti, G.</span>, <span class="refAuthor">Loreti, P.</span>, <span class="refAuthor">Bracciale, L.</span>, <span class="refAuthor">ElBakoury, H.</span>, and <span class="refAuthor">D. R. Lopez</span>, <span class="refTitle">"Integrating Extensible In-Band Processing (EIP) into the IOAM Framework: A Unified Approach to In-Packet Telemetry and Metadata"</span>, <span class="refContent">IEEE CSCN 2025 Conference</span>, <time datetime="2025" class="refDate">2025</time>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">TBD.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Andrea Mayer</span></div>
+<div dir="auto" class="left"><span class="org">Univ. of Rome Tor Vergata / CNIT / Common Net</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:andrea.mayer@uniroma2.it" class="email">andrea.mayer@uniroma2.it</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Stefano Salsano</span></div>
+<div dir="auto" class="left"><span class="org">Univ. of Rome Tor Vergata / CNIT</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:stefano.salsano@uniroma2.it" class="email">stefano.salsano@uniroma2.it</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Justin Iurman</span></div>
+<div dir="auto" class="left"><span class="org">University of Liege</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:justin.iurman@uliege.be" class="email">justin.iurman@uliege.be</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
