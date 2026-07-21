@@ -5,12 +5,12 @@
 WG Working Group                                                A. Mayer
 Internet-Draft             Univ. of Rome Tor Vergata / CNIT / Common Net
 Intended status: Experimental                                 S. Salsano
-Expires: 20 January 2027                Univ. of Rome Tor Vergata / CNIT
+Expires: 22 January 2027                Univ. of Rome Tor Vergata / CNIT
                                                                J. Iurman
                                                      University of Liege
                                                              D. R. Lopez
                                                               Telefonica
-                                                            19 July 2026
+                                                            21 July 2026
 
 
         Global Opaque Block for IOAM Pre-allocated Trace Option
@@ -65,7 +65,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 January 2027.
+   This Internet-Draft will expire on 22 January 2027.
 
 Copyright Notice
 
@@ -293,7 +293,10 @@ Table of Contents
       in units of 4 octets.
 
    Schema:  A 24-bit field that identifies the format of the GOB
-      Payload.
+      Payload.  The value 0xFFFFFF indicates that no schema is
+      associated with the GOB; in this case, the GOB Payload MUST NOT be
+      interpreted.  This mirrors the corresponding rule for the Opaque
+      State Snapshot Schema ID in [RFC9197].
 
    The total size of the GOB is therefore:
 
@@ -741,9 +744,17 @@ Offset      0                   1                   2                   3
    Future specifications may define registries, allocation policies, or
    schema-specific processing rules for GOB Payload formats.
 
+   The Schema value 0xFFFFFF is reserved and indicates that no schema is
+   associated with the GOB, consistent with the Opaque State Snapshot
+   rule of [RFC9197], where "the Schema ID MUST be set to 0xFFFFFF to
+   mean no schema".  An encapsulating node that inserts a GOB without an
+   associated schema MUST set the Schema field to 0xFFFFFF.  When the
+   Schema field is 0xFFFFFF, nodes MUST NOT interpret the GOB Payload
+   beyond its presence and length.
+
    A Schema value of 0 indicates a locally defined or domain-specific
    format.  Future specifications that define registries or allocation
-   policies for Schema values MUST preserve this reservation.
+   policies for Schema values MUST preserve these reservations.
 
 10.  Integration with EIP
 
