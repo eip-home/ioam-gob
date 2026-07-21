@@ -301,7 +301,8 @@ Schema:
   value 0xFFFFFF indicates that no schema is associated with the GOB;
   in this case, the GOB Payload MUST NOT be interpreted. This mirrors
   the corresponding rule for the Opaque State Snapshot Schema ID in
-  {{RFC9197}}.
+  {{RFC9197}}. The structure of the Schema value space is defined in
+  {{schema-semantics}}.
 
 The total size of the GOB is therefore:
 
@@ -724,9 +725,12 @@ per-node trace space and to the GOB. The GOB extends the PTO with a
 global opaque area while preserving the original PTO processing model.
 
 
-# Schema Semantics and Extensibility
+# Schema Semantics and Extensibility {#schema-semantics}
 
-The Schema field identifies the format of the GOB Payload.
+The Schema field identifies the format of the GOB Payload. As for the
+Opaque State Snapshot Schema ID of {{RFC9197}}, the Schema field is
+interpreted within the context of the IOAM-Namespace indicated by the
+Namespace-ID field of the enclosing PTO.
 
 A Schema value may identify:
 
@@ -739,8 +743,22 @@ internal syntax of individual schema-specific payloads. The semantics of
 the GOB Payload therefore depend on the specification associated with
 the Schema value in use.
 
-Future specifications may define registries, allocation policies, or
-schema-specific processing rules for GOB Payload formats.
+Following the model used by {{RFC9197}} for the Namespace-ID, the
+24-bit Schema value space is divided into two subranges:
+
+* an operator-assigned range from 0x000000 to 0x7FFFFF, and
+* an IANA-assigned range from 0x800000 to 0xFFFFFE.
+
+The operator-assigned range is domain specific and managed by the
+network operator: values in this range identify locally defined
+schemas, whose meaning is established by configuration within the
+deployment domain and within the context of the IOAM-Namespace in use.
+No value in this range has a preassigned meaning.
+
+The IANA-assigned range is intended for globally defined schemas
+specified in future documents, allowing new and interoperable GOB
+payload formats — for example, a registered schema identifying a
+sequence of EIP Information Elements.
 
 The Schema value 0xFFFFFF is reserved and indicates that no schema is
 associated with the GOB, consistent with the Opaque State Snapshot rule
@@ -748,11 +766,8 @@ of {{RFC9197}}, where "the Schema ID MUST be set to 0xFFFFFF to mean no
 schema". An encapsulating node that inserts a GOB without an associated
 schema MUST set the Schema field to 0xFFFFFF. When the Schema field is
 0xFFFFFF, nodes MUST NOT interpret the GOB Payload beyond its presence
-and length.
-
-A Schema value of 0 indicates a locally defined or domain-specific
-format. Future specifications that define registries or allocation
-policies for Schema values MUST preserve these reservations.
+and length. Future specifications that define allocation policies for
+Schema values MUST preserve this reservation.
 
 # Integration with EIP
 
@@ -833,6 +848,13 @@ of the GOB can still be indicated by the G bit, while the use of a
 distinct codepoint provides explicit protocol separation from the
 current PTO format and avoids any redefinition of the existing PTO
 Reserved field.
+
+In addition, {{schema-semantics}} divides the 24-bit Schema value space
+into an operator-assigned range (0x000000 to 0x7FFFFF) and an
+IANA-assigned range (0x800000 to 0xFFFFFE), with 0xFFFFFF reserved to
+indicate that no schema is associated with the GOB. A future version of
+this document is expected to request the creation of a "GOB Schema
+Identifiers" registry covering the IANA-assigned range.
 
 This version of the document does not request IANA actions. Future
 versions may request updates to the relevant IOAM or IPv6 registries,
