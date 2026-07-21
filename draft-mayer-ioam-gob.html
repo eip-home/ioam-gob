@@ -1538,7 +1538,8 @@ encapsulating node and ignored on receipt.<a href="#section-4.2-3" class="pilcro
 value 0xFFFFFF indicates that no schema is associated with the GOB;
 in this case, the GOB Payload <span class="bcp14">MUST NOT</span> be interpreted. This mirrors
 the corresponding rule for the Opaque State Snapshot Schema ID in
-<span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>.<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
+<span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>. The structure of the Schema value space is defined in
+<a href="#schema-semantics" class="auto internal xref">Section 9</a>.<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -2099,12 +2100,15 @@ per-node trace space and to the GOB. The GOB extends the PTO with a
 global opaque area while preserving the original PTO processing model.<a href="#section-8-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="schema-semantics-and-extensibility">
+<div id="schema-semantics">
 <section id="section-9">
       <h2 id="name-schema-semantics-and-extens">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-schema-semantics-and-extens" class="section-name selfRef">Schema Semantics and Extensibility</a>
       </h2>
-<p id="section-9-1">The Schema field identifies the format of the GOB Payload.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">The Schema field identifies the format of the GOB Payload. As for the
+Opaque State Snapshot Schema ID of <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>, the Schema field is
+interpreted within the context of the IOAM-Namespace indicated by the
+Namespace-ID field of the enclosing PTO.<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">A Schema value may identify:<a href="#section-9-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-9-3.1">
@@ -2121,18 +2125,33 @@ global opaque area while preserving the original PTO processing model.<a href="#
 internal syntax of individual schema-specific payloads. The semantics of
 the GOB Payload therefore depend on the specification associated with
 the Schema value in use.<a href="#section-9-4" class="pilcrow">¶</a></p>
-<p id="section-9-5">Future specifications may define registries, allocation policies, or
-schema-specific processing rules for GOB Payload formats.<a href="#section-9-5" class="pilcrow">¶</a></p>
-<p id="section-9-6">The Schema value 0xFFFFFF is reserved and indicates that no schema is
+<p id="section-9-5">Following the model used by <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> for the Namespace-ID, the
+24-bit Schema value space is divided into two subranges:<a href="#section-9-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9-6.1">
+          <p id="section-9-6.1.1">an operator-assigned range from 0x000000 to 0x7FFFFF, and<a href="#section-9-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-9-6.2">
+          <p id="section-9-6.2.1">an IANA-assigned range from 0x800000 to 0xFFFFFE.<a href="#section-9-6.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-9-7">The operator-assigned range is domain specific and managed by the
+network operator: values in this range identify locally defined
+schemas, whose meaning is established by configuration within the
+deployment domain and within the context of the IOAM-Namespace in use.
+No value in this range has a preassigned meaning.<a href="#section-9-7" class="pilcrow">¶</a></p>
+<p id="section-9-8">The IANA-assigned range is intended for globally defined schemas
+specified in future documents, allowing new and interoperable GOB
+payload formats — for example, a registered schema identifying a
+sequence of EIP Information Elements.<a href="#section-9-8" class="pilcrow">¶</a></p>
+<p id="section-9-9">The Schema value 0xFFFFFF is reserved and indicates that no schema is
 associated with the GOB, consistent with the Opaque State Snapshot rule
 of <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>, where "the Schema ID <span class="bcp14">MUST</span> be set to 0xFFFFFF to mean no
 schema". An encapsulating node that inserts a GOB without an associated
 schema <span class="bcp14">MUST</span> set the Schema field to 0xFFFFFF. When the Schema field is
 0xFFFFFF, nodes <span class="bcp14">MUST NOT</span> interpret the GOB Payload beyond its presence
-and length.<a href="#section-9-6" class="pilcrow">¶</a></p>
-<p id="section-9-7">A Schema value of 0 indicates a locally defined or domain-specific
-format. Future specifications that define registries or allocation
-policies for Schema values <span class="bcp14">MUST</span> preserve these reservations.<a href="#section-9-7" class="pilcrow">¶</a></p>
+and length. Future specifications that define allocation policies for
+Schema values <span class="bcp14">MUST</span> preserve this reservation.<a href="#section-9-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="integration-with-eip">
@@ -2214,9 +2233,15 @@ of the GOB can still be indicated by the G bit, while the use of a
 distinct codepoint provides explicit protocol separation from the
 current PTO format and avoids any redefinition of the existing PTO
 Reserved field.<a href="#section-12-4" class="pilcrow">¶</a></p>
-<p id="section-12-5">This version of the document does not request IANA actions. Future
+<p id="section-12-5">In addition, <a href="#schema-semantics" class="auto internal xref">Section 9</a> divides the 24-bit Schema value space
+into an operator-assigned range (0x000000 to 0x7FFFFF) and an
+IANA-assigned range (0x800000 to 0xFFFFFE), with 0xFFFFFF reserved to
+indicate that no schema is associated with the GOB. A future version of
+this document is expected to request the creation of a "GOB Schema
+Identifiers" registry covering the IANA-assigned range.<a href="#section-12-5" class="pilcrow">¶</a></p>
+<p id="section-12-6">This version of the document does not request IANA actions. Future
 versions may request updates to the relevant IOAM or IPv6 registries,
-depending on which standardization approach is selected.<a href="#section-12-5" class="pilcrow">¶</a></p>
+depending on which standardization approach is selected.<a href="#section-12-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
