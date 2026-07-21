@@ -297,7 +297,11 @@ GOB Len:
   4 octets.
 
 Schema:
-: A 24-bit field that identifies the format of the GOB Payload.
+: A 24-bit field that identifies the format of the GOB Payload. The
+  value 0xFFFFFF indicates that no schema is associated with the GOB;
+  in this case, the GOB Payload MUST NOT be interpreted. This mirrors
+  the corresponding rule for the Opaque State Snapshot Schema ID in
+  {{RFC9197}}.
 
 The total size of the GOB is therefore:
 
@@ -738,9 +742,17 @@ the Schema value in use.
 Future specifications may define registries, allocation policies, or
 schema-specific processing rules for GOB Payload formats.
 
+The Schema value 0xFFFFFF is reserved and indicates that no schema is
+associated with the GOB, consistent with the Opaque State Snapshot rule
+of {{RFC9197}}, where "the Schema ID MUST be set to 0xFFFFFF to mean no
+schema". An encapsulating node that inserts a GOB without an associated
+schema MUST set the Schema field to 0xFFFFFF. When the Schema field is
+0xFFFFFF, nodes MUST NOT interpret the GOB Payload beyond its presence
+and length.
+
 A Schema value of 0 indicates a locally defined or domain-specific
 format. Future specifications that define registries or allocation
-policies for Schema values MUST preserve this reservation.
+policies for Schema values MUST preserve these reservations.
 
 # Integration with EIP
 
