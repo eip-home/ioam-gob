@@ -1068,7 +1068,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Mayer, et al.</td>
-<td class="center">Expires 22 January 2027</td>
+<td class="center">Expires 23 January 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1081,12 +1081,12 @@ svg {
 <dd class="internet-draft">draft-mayer-ioam-gob-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-07-21" class="published">21 July 2026</time>
+<time datetime="2026-07-22" class="published">22 July 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-01-22">22 January 2027</time></dd>
+<dd class="expires"><time datetime="2027-01-23">23 January 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1161,7 +1161,7 @@ formats.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 22 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1488,7 +1488,7 @@ format.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">The GOB appears at most once in a PTO option.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="g-bit-and-ver-field">
+<div id="g-bit-ver">
 <section id="section-4.2">
         <h3 id="name-g-bit-and-ver-field">
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-g-bit-and-ver-field" class="section-name selfRef">G Bit and Ver Field</a>
@@ -2215,24 +2215,29 @@ the IOAM Pre-allocated Trace Option.<a href="#section-12-1" class="pilcrow">¶</
 <p id="section-12-2">As discussed in <a href="#backward-compatibility" class="auto internal xref">Section 6</a>, the GOB is transparent to
 legacy IOAM transit nodes: it is placed outside the region that such
 nodes can address, and the semantics of all existing PTO fields are
-preserved. Two possible standardization approaches can be considered
-in this light.<a href="#section-12-2" class="pilcrow">¶</a></p>
-<p id="section-12-3">A first approach is to reuse the existing codepoint of the IOAM
-Pre-allocated Trace Option, defining the G bit and the Ver field within
-the Reserved octet of the PTO fixed header. Since <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> requires
+preserved.<a href="#section-12-2" class="pilcrow">¶</a></p>
+<p id="section-12-3">In this light, this document proposes to reuse the existing codepoint
+of the IOAM Pre-allocated Trace-Option, defining the G bit and the Ver
+field within the Reserved octet of the PTO fixed header, in the
+positions specified in <a href="#g-bit-ver" class="auto internal xref">Section 4.2</a>. Since <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> requires
 transit nodes to ignore the Reserved field, this approach does not
 affect legacy transit behavior. However, <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> also requires the
-encapsulating node to set the Reserved field to zero, so an
-encapsulating node inserting a GOB would deviate from that requirement,
-and the bits used by G and Ver could collide with future allocations of
-the Reserved field. This approach therefore requires a formal update of
-the definition of the Reserved field of the PTO.<a href="#section-12-3" class="pilcrow">¶</a></p>
-<p id="section-12-4">A second approach is to define a new codepoint for a PTO variant that
-supports the Global Opaque Block. In this case, the presence or absence
-of the GOB can still be indicated by the G bit, while the use of a
-distinct codepoint provides explicit protocol separation from the
-current PTO format and avoids any redefinition of the existing PTO
-Reserved field.<a href="#section-12-4" class="pilcrow">¶</a></p>
+encapsulating node to set the Reserved field to zero: the reuse of the
+PTO codepoint therefore requires a formal update of the definition of
+the Reserved octet of the PTO, allocating its least significant bit as
+the G bit and the two preceding bits as the Ver field, while the
+remaining five bits stay reserved.<a href="#section-12-3" class="pilcrow">¶</a></p>
+<p id="section-12-4">As a subordinate fallback, should the update of the PTO Reserved octet
+definition not be acceptable, a new codepoint can be defined for a PTO
+variant that supports the Global Opaque Block. In this case, the
+presence or absence of the GOB would still be indicated by the G bit,
+while the use of a distinct codepoint provides explicit protocol
+separation from the current PTO format and avoids any redefinition of
+the existing PTO Reserved octet. Note, however, that this fallback
+weakens the main benefit of the tail placement: a legacy transit node
+that does not recognize the new codepoint would skip the option
+entirely, instead of processing the node data space as it does under
+the codepoint-reuse approach.<a href="#section-12-4" class="pilcrow">¶</a></p>
 <p id="section-12-5">In addition, <a href="#schema-semantics" class="auto internal xref">Section 9</a> divides the 24-bit Schema value space
 into an operator-assigned range (0x000000 to 0x7FFFFF) and an
 IANA-assigned range (0x800000 to 0xFFFFFE), with 0xFFFFFF reserved to

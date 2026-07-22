@@ -5,12 +5,12 @@
 WG Working Group                                                A. Mayer
 Internet-Draft             Univ. of Rome Tor Vergata / CNIT / Common Net
 Intended status: Experimental                                 S. Salsano
-Expires: 22 January 2027                Univ. of Rome Tor Vergata / CNIT
+Expires: 23 January 2027                Univ. of Rome Tor Vergata / CNIT
                                                                J. Iurman
                                                      University of Liege
                                                              D. R. Lopez
                                                               Telefonica
-                                                            21 July 2026
+                                                            22 July 2026
 
 
         Global Opaque Block for IOAM Pre-allocated Trace Option
@@ -65,7 +65,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 January 2027.
+   This Internet-Draft will expire on 23 January 2027.
 
 Copyright Notice
 
@@ -830,26 +830,30 @@ Offset      0                   1                   2                   3
    As discussed in Section 6, the GOB is transparent to legacy IOAM
    transit nodes: it is placed outside the region that such nodes can
    address, and the semantics of all existing PTO fields are preserved.
-   Two possible standardization approaches can be considered in this
-   light.
 
-   A first approach is to reuse the existing codepoint of the IOAM Pre-
-   allocated Trace Option, defining the G bit and the Ver field within
-   the Reserved octet of the PTO fixed header.  Since [RFC9197] requires
-   transit nodes to ignore the Reserved field, this approach does not
-   affect legacy transit behavior.  However, [RFC9197] also requires the
-   encapsulating node to set the Reserved field to zero, so an
-   encapsulating node inserting a GOB would deviate from that
-   requirement, and the bits used by G and Ver could collide with future
-   allocations of the Reserved field.  This approach therefore requires
-   a formal update of the definition of the Reserved field of the PTO.
+   In this light, this document proposes to reuse the existing codepoint
+   of the IOAM Pre-allocated Trace-Option, defining the G bit and the
+   Ver field within the Reserved octet of the PTO fixed header, in the
+   positions specified in Section 4.2.  Since [RFC9197] requires transit
+   nodes to ignore the Reserved field, this approach does not affect
+   legacy transit behavior.  However, [RFC9197] also requires the
+   encapsulating node to set the Reserved field to zero: the reuse of
+   the PTO codepoint therefore requires a formal update of the
+   definition of the Reserved octet of the PTO, allocating its least
+   significant bit as the G bit and the two preceding bits as the Ver
+   field, while the remaining five bits stay reserved.
 
-   A second approach is to define a new codepoint for a PTO variant that
-   supports the Global Opaque Block.  In this case, the presence or
-   absence of the GOB can still be indicated by the G bit, while the use
-   of a distinct codepoint provides explicit protocol separation from
-   the current PTO format and avoids any redefinition of the existing
-   PTO Reserved field.
+   As a subordinate fallback, should the update of the PTO Reserved
+   octet definition not be acceptable, a new codepoint can be defined
+   for a PTO variant that supports the Global Opaque Block.  In this
+   case, the presence or absence of the GOB would still be indicated by
+   the G bit, while the use of a distinct codepoint provides explicit
+   protocol separation from the current PTO format and avoids any
+   redefinition of the existing PTO Reserved octet.  Note, however, that
+   this fallback weakens the main benefit of the tail placement: a
+   legacy transit node that does not recognize the new codepoint would
+   skip the option entirely, instead of processing the node data space
+   as it does under the codepoint-reuse approach.
 
    In addition, Section 9 divides the 24-bit Schema value space into an
    operator-assigned range (0x000000 to 0x7FFFFF) and an IANA-assigned
