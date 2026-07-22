@@ -266,7 +266,7 @@ format.
 
 The GOB appears at most once in a PTO option.
 
-## G Bit and Ver Field
+## G Bit and Ver Field {#g-bit-ver}
 
 The presence of the GOB is signaled in the last octet of the second
 word of the PTO fixed header, defined as Reserved in {{RFC9197}}. When
@@ -828,26 +828,31 @@ the IOAM Pre-allocated Trace Option.
 As discussed in {{backward-compatibility}}, the GOB is transparent to
 legacy IOAM transit nodes: it is placed outside the region that such
 nodes can address, and the semantics of all existing PTO fields are
-preserved. Two possible standardization approaches can be considered
-in this light.
+preserved.
 
-A first approach is to reuse the existing codepoint of the IOAM
-Pre-allocated Trace Option, defining the G bit and the Ver field within
-the Reserved octet of the PTO fixed header. Since {{RFC9197}} requires
+In this light, this document proposes to reuse the existing codepoint
+of the IOAM Pre-allocated Trace-Option, defining the G bit and the Ver
+field within the Reserved octet of the PTO fixed header, in the
+positions specified in {{g-bit-ver}}. Since {{RFC9197}} requires
 transit nodes to ignore the Reserved field, this approach does not
 affect legacy transit behavior. However, {{RFC9197}} also requires the
-encapsulating node to set the Reserved field to zero, so an
-encapsulating node inserting a GOB would deviate from that requirement,
-and the bits used by G and Ver could collide with future allocations of
-the Reserved field. This approach therefore requires a formal update of
-the definition of the Reserved field of the PTO.
+encapsulating node to set the Reserved field to zero: the reuse of the
+PTO codepoint therefore requires a formal update of the definition of
+the Reserved octet of the PTO, allocating its least significant bit as
+the G bit and the two preceding bits as the Ver field, while the
+remaining five bits stay reserved.
 
-A second approach is to define a new codepoint for a PTO variant that
-supports the Global Opaque Block. In this case, the presence or absence
-of the GOB can still be indicated by the G bit, while the use of a
-distinct codepoint provides explicit protocol separation from the
-current PTO format and avoids any redefinition of the existing PTO
-Reserved field.
+As a subordinate fallback, should the update of the PTO Reserved octet
+definition not be acceptable, a new codepoint can be defined for a PTO
+variant that supports the Global Opaque Block. In this case, the
+presence or absence of the GOB would still be indicated by the G bit,
+while the use of a distinct codepoint provides explicit protocol
+separation from the current PTO format and avoids any redefinition of
+the existing PTO Reserved octet. Note, however, that this fallback
+weakens the main benefit of the tail placement: a legacy transit node
+that does not recognize the new codepoint would skip the option
+entirely, instead of processing the node data space as it does under
+the codepoint-reuse approach.
 
 In addition, {{schema-semantics}} divides the 24-bit Schema value space
 into an operator-assigned range (0x000000 to 0x7FFFFF) and an
