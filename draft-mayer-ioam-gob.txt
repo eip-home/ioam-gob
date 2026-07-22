@@ -107,11 +107,12 @@ Table of Contents
    8.  Relation to PTO Semantics
    9.  Schema Semantics and Extensibility
    10. Integration with EIP
-   11. Security Considerations
-   12. IANA Considerations
-   13. References
-     13.1.  Normative References
-     13.2.  Informative References
+   11. Implementation Status
+   12. Security Considerations
+   13. IANA Considerations
+   14. References
+     14.1.  Normative References
+     14.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -156,8 +157,7 @@ Table of Contents
    collector nodes.
 
    An implementation and experimental evaluation of the proposed GOB
-   approach within the Linux IOAM framework are described in
-   [mayer26noms].
+   approach within the Linux IOAM framework are described in Section 11.
 
 2.  Conventions and Definitions
 
@@ -795,7 +795,38 @@ Offset      0                   1                   2                   3
    The GOB-based integration has also been described and experimentally
    evaluated in [mayer26noms].
 
-11.  Security Considerations
+11.  Implementation Status
+
+   [RFC Editor: please remove this section before publication.]
+
+   This section records the status of known implementations of the
+   mechanism defined by this specification, following the approach
+   suggested by [RFC7942].
+
+   An open source implementation of the GOB in the Linux kernel IOAM
+   subsystem is available and is aligned with the specification in this
+   document: tail placement of the GOB, GOB Trailer as the last word of
+   the option, and unmodified RemainingLen semantics.  It covers
+   encapsulation, transit and decapsulation processing, and includes a
+   dedicated eBPF program type for programmable processing of the GOB
+   Payload.  The eBPF program context exposes only the GOB Payload, so
+   that the GOB Trailer is not addressable by the program: the
+   corresponding "MUST NOT modify the GOB Trailer" requirement of this
+   document is enforced at the eBPF verifier level.
+
+   A complete development and test environment, including build
+   instructions and an interactive demonstration of in-flight
+   aggregation (minimum, maximum, sum and count of a per-node metric
+   carried in the GOB Payload), is available at
+   https://github.com/netgroup/ioam-gob-kernel-playground.  The
+   demonstration was presented at the IETF 126 hackathon, within the
+   project "In-Network Telemetry Aggregation Using new IOAM extensions".
+
+   An earlier implementation and experimental evaluation, based on the
+   -01 revision of this document (with the GOB placed at the head of the
+   option), is described in [mayer26noms].
+
+12.  Security Considerations
 
    The GOB introduces a global metadata region that may be read or
    modified by on-path nodes.  Unauthorized access to, or modification
@@ -822,7 +853,7 @@ Offset      0                   1                   2                   3
    information.  Schema-specific specifications SHOULD describe any
    additional confidentiality, integrity, or authorization requirements.
 
-12.  IANA Considerations
+13.  IANA Considerations
 
    This document defines the Global Opaque Block (GOB) as an extension
    to the IOAM Pre-allocated Trace Option.
@@ -866,9 +897,9 @@ Offset      0                   1                   2                   3
    versions may request updates to the relevant IOAM or IPv6 registries,
    depending on which standardization approach is selected.
 
-13.  References
+14.  References
 
-13.1.  Normative References
+14.1.  Normative References
 
    [IANA-ioam-types]
               IANA, "IOAM Data Field Types", n.d.,
@@ -904,7 +935,7 @@ Offset      0                   1                   2                   3
               (IOAM)", RFC 9486, DOI 10.17487/RFC9486, September 2023,
               <https://www.rfc-editor.org/rfc/rfc9486>.
 
-13.2.  Informative References
+14.2.  Informative References
 
    [draft-eip-arch]
               Salsano, S., ElBakoury, H., and D. R. Lopez, "Extensible
@@ -918,6 +949,11 @@ Offset      0                   1                   2                   3
               "Integrating the Global Opaque Block into the IOAM
               Framework: A Unified Approach to In-Packet Telemetry and
               Metadata", IEEE/IFIP NOMS 2026, 2026.
+
+   [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
+              Code: The Implementation Status Section", BCP 205,
+              RFC 7942, DOI 10.17487/RFC7942, July 2016,
+              <https://www.rfc-editor.org/rfc/rfc7942>.
 
    [salsano25cscn]
               Salsano, S., Mayer, A., Sidoretti, G., Loreti, P.,

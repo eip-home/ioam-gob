@@ -1277,27 +1277,30 @@ formats.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-integration-with-eip" class="internal xref">Integration with EIP</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
-                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
-                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
+                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="auto internal xref">14.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
+                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="auto internal xref">14.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
-</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
+            <p id="section-toc.1-1.16.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1340,7 +1343,7 @@ layout of the enclosing PTO option.<a href="#section-1-5" class="pilcrow">¶</a>
 processing behavior for encapsulating, transit, and egress or collector
 nodes.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">An implementation and experimental evaluation of the proposed GOB approach
-within the Linux IOAM framework are described in <span>[<a href="#mayer26noms" class="cite xref">mayer26noms</a>]</span>.<a href="#section-1-7" class="pilcrow">¶</a></p>
+within the Linux IOAM framework are described in <a href="#implementation-status" class="auto internal xref">Section 11</a>.<a href="#section-1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -2177,19 +2180,50 @@ EIP Information Elements, but it is not limited to EIP.<a href="#section-10-4" c
 evaluated in <span>[<a href="#mayer26noms" class="cite xref">mayer26noms</a>]</span>.<a href="#section-10-5" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="security-considerations">
+<div id="implementation-status">
 <section id="section-11">
-      <h2 id="name-security-considerations">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      <h2 id="name-implementation-status">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
       </h2>
-<p id="section-11-1">The GOB introduces a global metadata region that may be read or modified
+<p id="section-11-1">[RFC Editor: please remove this section before publication.]<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">This section records the status of known implementations of the
+mechanism defined by this specification, following the approach
+suggested by <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>.<a href="#section-11-2" class="pilcrow">¶</a></p>
+<p id="section-11-3">An open source implementation of the GOB in the Linux kernel IOAM
+subsystem is available and is aligned with the specification in this
+document: tail placement of the GOB, GOB Trailer as the last word of
+the option, and unmodified RemainingLen semantics. It covers
+encapsulation, transit and decapsulation processing, and includes a
+dedicated eBPF program type for programmable processing of the GOB
+Payload. The eBPF program context exposes only the GOB Payload, so
+that the GOB Trailer is not addressable by the program: the
+corresponding "<span class="bcp14">MUST NOT</span> modify the GOB Trailer" requirement of this
+document is enforced at the eBPF verifier level.<a href="#section-11-3" class="pilcrow">¶</a></p>
+<p id="section-11-4">A complete development and test environment, including build
+instructions and an interactive demonstration of in-flight aggregation
+(minimum, maximum, sum and count of a per-node metric carried in the
+GOB Payload), is available at
+https://github.com/netgroup/ioam-gob-kernel-playground. The
+demonstration was presented at the IETF 126 hackathon, within the
+project "In-Network Telemetry Aggregation Using new IOAM extensions".<a href="#section-11-4" class="pilcrow">¶</a></p>
+<p id="section-11-5">An earlier implementation and experimental evaluation, based on the
+-01 revision of this document (with the GOB placed at the head of the
+option), is described in <span>[<a href="#mayer26noms" class="cite xref">mayer26noms</a>]</span>.<a href="#section-11-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-12">
+      <h2 id="name-security-considerations">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-12-1">The GOB introduces a global metadata region that may be read or modified
 by on-path nodes. Unauthorized access to, or modification of, the GOB
 Payload can affect telemetry interpretation, service behavior, or policy
-enforcement.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<p id="section-11-2">For this reason, deployments of the GOB <span class="bcp14">SHOULD</span> be limited to controlled
+enforcement.<a href="#section-12-1" class="pilcrow">¶</a></p>
+<p id="section-12-2">For this reason, deployments of the GOB <span class="bcp14">SHOULD</span> be limited to controlled
 or trusted domains, consistent with the limited-domain assumptions often
-applied to IOAM deployments.<a href="#section-11-2" class="pilcrow">¶</a></p>
-<p id="section-11-3">The GOB Trailer is not protected by any checksum or authentication
+applied to IOAM deployments.<a href="#section-12-2" class="pilcrow">¶</a></p>
+<p id="section-12-3">The GOB Trailer is not protected by any checksum or authentication
 mechanism. A misbehaving or malicious on-path node could corrupt the
 GOB Trailer; in particular, an inflated GOB Len value could cause a
 decapsulating node to interpret recorded node data as GOB Payload. The
@@ -2197,26 +2231,26 @@ validity check of <a href="#internal-pto-offsets" class="auto internal xref">Sec
 inconsistent with the option length and with the current RemainingLen
 value, and <span class="bcp14">MUST</span> be applied by every GOB-aware node before parsing the
 GOB. Deployments <span class="bcp14">MAY</span> additionally cross-check the received GOB Len and
-Schema values against per-namespace configuration.<a href="#section-11-3" class="pilcrow">¶</a></p>
-<p id="section-11-4">The security implications of the GOB Payload also depend on the Schema
+Schema values against per-namespace configuration.<a href="#section-12-3" class="pilcrow">¶</a></p>
+<p id="section-12-4">The security implications of the GOB Payload also depend on the Schema
 in use. Some schemas may carry purely observational metadata, while
 others may influence packet treatment or convey more sensitive
 information. Schema-specific specifications <span class="bcp14">SHOULD</span> describe any
-additional confidentiality, integrity, or authorization requirements.<a href="#section-11-4" class="pilcrow">¶</a></p>
+additional confidentiality, integrity, or authorization requirements.<a href="#section-12-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-12">
+<section id="section-13">
       <h2 id="name-iana-considerations">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-12-1">This document defines the Global Opaque Block (GOB) as an extension to
-the IOAM Pre-allocated Trace Option.<a href="#section-12-1" class="pilcrow">¶</a></p>
-<p id="section-12-2">As discussed in <a href="#backward-compatibility" class="auto internal xref">Section 6</a>, the GOB is transparent to
+<p id="section-13-1">This document defines the Global Opaque Block (GOB) as an extension to
+the IOAM Pre-allocated Trace Option.<a href="#section-13-1" class="pilcrow">¶</a></p>
+<p id="section-13-2">As discussed in <a href="#backward-compatibility" class="auto internal xref">Section 6</a>, the GOB is transparent to
 legacy IOAM transit nodes: it is placed outside the region that such
 nodes can address, and the semantics of all existing PTO fields are
-preserved.<a href="#section-12-2" class="pilcrow">¶</a></p>
-<p id="section-12-3">In this light, this document proposes to reuse the existing codepoint
+preserved.<a href="#section-13-2" class="pilcrow">¶</a></p>
+<p id="section-13-3">In this light, this document proposes to reuse the existing codepoint
 of the IOAM Pre-allocated Trace-Option, defining the G bit and the Ver
 field within the Reserved octet of the PTO fixed header, in the
 positions specified in <a href="#g-bit-ver" class="auto internal xref">Section 4.2</a>. Since <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> requires
@@ -2226,8 +2260,8 @@ encapsulating node to set the Reserved field to zero: the reuse of the
 PTO codepoint therefore requires a formal update of the definition of
 the Reserved octet of the PTO, allocating its least significant bit as
 the G bit and the two preceding bits as the Ver field, while the
-remaining five bits stay reserved.<a href="#section-12-3" class="pilcrow">¶</a></p>
-<p id="section-12-4">As a subordinate fallback, should the update of the PTO Reserved octet
+remaining five bits stay reserved.<a href="#section-13-3" class="pilcrow">¶</a></p>
+<p id="section-13-4">As a subordinate fallback, should the update of the PTO Reserved octet
 definition not be acceptable, a new codepoint can be defined for a PTO
 variant that supports the Global Opaque Block. In this case, the
 presence or absence of the GOB would still be indicated by the G bit,
@@ -2237,27 +2271,27 @@ the existing PTO Reserved octet. Note, however, that this fallback
 weakens the main benefit of the tail placement: a legacy transit node
 that does not recognize the new codepoint would skip the option
 entirely, instead of processing the node data space as it does under
-the codepoint-reuse approach.<a href="#section-12-4" class="pilcrow">¶</a></p>
-<p id="section-12-5">In addition, <a href="#schema-semantics" class="auto internal xref">Section 9</a> divides the 24-bit Schema value space
+the codepoint-reuse approach.<a href="#section-13-4" class="pilcrow">¶</a></p>
+<p id="section-13-5">In addition, <a href="#schema-semantics" class="auto internal xref">Section 9</a> divides the 24-bit Schema value space
 into an operator-assigned range (0x000000 to 0x7FFFFF) and an
 IANA-assigned range (0x800000 to 0xFFFFFE), with 0xFFFFFF reserved to
 indicate that no schema is associated with the GOB. A future version of
 this document is expected to request the creation of a "GOB Schema
-Identifiers" registry covering the IANA-assigned range.<a href="#section-12-5" class="pilcrow">¶</a></p>
-<p id="section-12-6">This version of the document does not request IANA actions. Future
+Identifiers" registry covering the IANA-assigned range.<a href="#section-13-5" class="pilcrow">¶</a></p>
+<p id="section-13-6">This version of the document does not request IANA actions. Future
 versions may request updates to the relevant IOAM or IPv6 registries,
-depending on which standardization approach is selected.<a href="#section-12-6" class="pilcrow">¶</a></p>
+depending on which standardization approach is selected.<a href="#section-13-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-13">
+<section id="section-14">
       <h2 id="name-references">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-13.1">
+<section id="section-14.1">
         <h3 id="name-normative-references">
-<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-14.1" class="section-number selfRef">14.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="IANA-ioam-types">[IANA-ioam-types]</dt>
@@ -2292,9 +2326,9 @@ depending on which standardization approach is selected.<a href="#section-12-6" 
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-13.2">
+<section id="section-14.2">
         <h3 id="name-informative-references">
-<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="draft-eip-arch">[draft-eip-arch]</dt>
@@ -2304,6 +2338,10 @@ depending on which standardization approach is selected.<a href="#section-12-6" 
 <dt id="mayer26noms">[mayer26noms]</dt>
         <dd>
 <span class="refAuthor">Mayer, A.</span>, <span class="refAuthor">Salsano, S.</span>, <span class="refAuthor">Sidoretti, G.</span>, <span class="refAuthor">Loreti, P.</span>, <span class="refAuthor">Bracciale, L.</span>, <span class="refAuthor">ElBakoury, H.</span>, and <span class="refAuthor">D. R. Lopez</span>, <span class="refTitle">"Integrating the Global Opaque Block into the IOAM Framework: A Unified Approach to In-Packet Telemetry and Metadata"</span>, <span class="refContent">IEEE/IFIP NOMS 2026</span>, <time datetime="2026" class="refDate">2026</time>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7942">[RFC7942]</dt>
+        <dd>
+<span class="refAuthor">Sheffer, Y.</span> and <span class="refAuthor">A. Farrel</span>, <span class="refTitle">"Improving Awareness of Running Code: The Implementation Status Section"</span>, <span class="seriesInfo">BCP 205</span>, <span class="seriesInfo">RFC 7942</span>, <span class="seriesInfo">DOI 10.17487/RFC7942</span>, <time datetime="2016-07" class="refDate">July 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7942">https://www.rfc-editor.org/rfc/rfc7942</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="salsano25cscn">[salsano25cscn]</dt>
       <dd>
