@@ -161,7 +161,7 @@ processing behavior for encapsulating, transit, and egress or collector
 nodes.
 
 An implementation and experimental evaluation of the proposed GOB approach
-within the Linux IOAM framework are described in [mayer26noms].
+within the Linux IOAM framework are described in {{implementation-status}}.
 
 # Conventions and Definitions
 
@@ -790,8 +790,39 @@ The GOB is a general container for structured metadata. It can carry
 EIP Information Elements, but it is not limited to EIP.
 
 The GOB-based integration has also been described and experimentally
-evaluated in [mayer26noms].
+evaluated in {{mayer26noms}}.
 
+
+# Implementation Status {#implementation-status}
+
+[RFC Editor: please remove this section before publication.]
+
+This section records the status of known implementations of the
+mechanism defined by this specification, following the approach
+suggested by {{?RFC7942}}.
+
+An open source implementation of the GOB in the Linux kernel IOAM
+subsystem is available and is aligned with the specification in this
+document: tail placement of the GOB, GOB Trailer as the last word of
+the option, and unmodified RemainingLen semantics. It covers
+encapsulation, transit and decapsulation processing, and includes a
+dedicated eBPF program type for programmable processing of the GOB
+Payload. The eBPF program context exposes only the GOB Payload, so
+that the GOB Trailer is not addressable by the program: the
+corresponding "MUST NOT modify the GOB Trailer" requirement of this
+document is enforced at the eBPF verifier level.
+
+A complete development and test environment, including build
+instructions and an interactive demonstration of in-flight aggregation
+(minimum, maximum, sum and count of a per-node metric carried in the
+GOB Payload), is available at
+https://github.com/netgroup/ioam-gob-kernel-playground. The
+demonstration was presented at the IETF 126 hackathon, within the
+project "In-Network Telemetry Aggregation Using new IOAM extensions".
+
+An earlier implementation and experimental evaluation, based on the
+-01 revision of this document (with the GOB placed at the head of the
+option), is described in {{mayer26noms}}.
 
 # Security Considerations
 
