@@ -1692,10 +1692,14 @@ multiple of 4 octets, and the sizes of 4, 8, 12 and 16 octets are
             <p id="section-4.5-3.3.1">the schema of the GOB payload is likewise implied by the namespace;<a href="#section-4.5-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.5-3.4">
-            <p id="section-4.5-3.4.1">the G bit <span class="bcp14">MUST</span> be set to 1 and the Ver field <span class="bcp14">MUST</span> be set to 0,
-exactly as in the default mode: the presence of the GOB remains
-signaled in band, and a GOB-aware node distinguishes the two modes
-by the Namespace-ID.<a href="#section-4.5-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.5-3.4.1">the presence of the GOB is determined by the Namespace-ID itself: a
+GOB-aware node <span class="bcp14">MUST</span> treat the GOB as present regardless of the value
+of the G bit. The encapsulating node <span class="bcp14">SHOULD</span> set the G bit to 1 (and
+the Ver field to 0) as an in-band confirmation when the deployment
+uses the Reserved octet extension of <a href="#g-bit-ver" class="auto internal xref">Section 4.2</a>; alternatively,
+it <span class="bcp14">MAY</span> leave the Reserved octet at zero, obtaining a pure
+namespace-based mode of operation that does not use the Reserved
+octet at all.<a href="#section-4.5-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-4.5-4">In this mode, the GOB occupies the last <code>GOB_SIZE</code> octets of the IOAM
@@ -1714,7 +1718,11 @@ efficient possible transport for it; a 16-octet record is carried in
 16 octets. Note that the fields defined by <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> keep their
 format and semantics regardless of the namespace value: the namespace
 only provides the interpretation context for octets that lie outside
-all such fields.<a href="#section-4.5-5" class="pilcrow">¶</a></p>
+all such fields. In particular, in the pure namespace-based variant,
+with the Reserved octet left at zero, the option is, on the wire, a
+plain Pre-allocated Trace Option whose pre-allocated space extends
+beyond the RemainingLen window: this variant can be deployed without
+any change to <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span>.<a href="#section-4.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2037,7 +2045,10 @@ for <code>GOB_SIZE</code> octets when assessing path MTU constraints.<a href="#s
 <p id="section-6.6-1">The analysis in this section applies unchanged to the namespace-implied
 mode of <a href="#namespace-implied" class="auto internal xref">Section 4.5</a>: the GOB occupies the same tail region,
 outside the RemainingLen window, regardless of whether its size is
-described by the GOB Trailer or implied by the IOAM-Namespace.<a href="#section-6.6-1" class="pilcrow">¶</a></p>
+described by the GOB Trailer or implied by the IOAM-Namespace. In the
+pure namespace-based variant, with the Reserved octet left at zero,
+the option is additionally fully compliant with <span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> as
+currently specified.<a href="#section-6.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2050,9 +2061,9 @@ described by the GOB Trailer or implied by the IOAM-Namespace.<a href="#section-
 <p id="section-7-1">This section specifies the behavior for the default, trailer-based
 mode of operation. In the namespace-implied mode, the same rules apply
 with the adjustments specified in <a href="#namespace-implied" class="auto internal xref">Section 4.5</a>: the presence
-of the GOB is signaled by the G bit as in the default mode, while its
-size and schema are derived from the Namespace-ID and the GOB Trailer
-is absent.<a href="#section-7-1" class="pilcrow">¶</a></p>
+of the GOB is determined by the Namespace-ID (with the G bit as
+optional in-band confirmation), its size and schema are derived from
+the Namespace-ID, and the GOB Trailer is absent.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <div id="ingress-node-behavior">
 <section id="section-7.1">
         <h3 id="name-ingress-node-behavior">
@@ -2352,13 +2363,16 @@ that does not recognize the new codepoint would skip the option
 entirely, instead of processing the node data space as it does under
 the codepoint-reuse approach.<a href="#section-13-4" class="pilcrow">¶</a></p>
 <p id="section-13-5">The namespace-implied mode of <a href="#namespace-implied" class="auto internal xref">Section 4.5</a> is orthogonal to
-the choice above: it uses the G bit under whichever of the two
-approaches is selected, and additionally relies on values of the
-existing "IOAM Namespace-ID" registry, where each registered (or
-operator-configured) GOB-implying value specifies the implied GOB size
-and schema. No further codepoints are required for it. A future
-version of this document may request such Namespace-ID registrations
-for standardized compact records.<a href="#section-13-5" class="pilcrow">¶</a></p>
+the choice above: it relies on values of the existing "IOAM
+Namespace-ID" registry, where each registered (or operator-configured)
+GOB-implying value specifies the implied GOB size and schema, and it
+can use the G bit as in-band confirmation under whichever of the two
+approaches is selected. Notably, its pure namespace-based variant,
+with the Reserved octet left at zero, requires neither the update of
+the Reserved octet nor a new codepoint: it can be deployed under
+<span>[<a href="#RFC9197" class="cite xref">RFC9197</a>]</span> as currently specified. A future version of this document
+may request Namespace-ID registrations for standardized compact
+records.<a href="#section-13-5" class="pilcrow">¶</a></p>
 <p id="section-13-6">In addition, <a href="#schema-semantics" class="auto internal xref">Section 9</a> divides the 24-bit Schema value space
 into an operator-assigned range (0x000000 to 0x7FFFFF) and an
 IANA-assigned range (0x800000 to 0xFFFFFE), with 0xFFFFFF reserved to
