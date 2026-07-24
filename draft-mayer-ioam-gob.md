@@ -881,9 +881,11 @@ mechanism defined by this specification, following the approach
 suggested by {{?RFC7942}}.
 
 An open source implementation of the GOB in the Linux kernel IOAM
-subsystem is available and is aligned with the specification in this
-document: tail placement of the GOB, GOB Trailer as the last word of
-the option, and unmodified RemainingLen semantics. It covers
+subsystem is available and is aligned with the default, trailer-based
+mode of the specification in this document: tail placement of the GOB,
+GOB Trailer as the last word of the option, and unmodified
+RemainingLen semantics. The namespace-implied mode of
+{{namespace-implied}} is not yet implemented. The implementation covers
 encapsulation, transit and decapsulation processing, and includes a
 dedicated eBPF program type for programmable processing of the GOB
 Payload. The eBPF program context exposes only the GOB Payload, so
