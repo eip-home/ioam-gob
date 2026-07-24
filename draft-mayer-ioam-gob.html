@@ -2290,9 +2290,11 @@ evaluated in <span>[<a href="#mayer26noms" class="cite xref">mayer26noms</a>]</s
 mechanism defined by this specification, following the approach
 suggested by <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>.<a href="#section-11-2" class="pilcrow">¶</a></p>
 <p id="section-11-3">An open source implementation of the GOB in the Linux kernel IOAM
-subsystem is available and is aligned with the specification in this
-document: tail placement of the GOB, GOB Trailer as the last word of
-the option, and unmodified RemainingLen semantics. It covers
+subsystem is available and is aligned with the default, trailer-based
+mode of the specification in this document: tail placement of the GOB,
+GOB Trailer as the last word of the option, and unmodified
+RemainingLen semantics. The namespace-implied mode of
+<a href="#namespace-implied" class="auto internal xref">Section 4.5</a> is not yet implemented. The implementation covers
 encapsulation, transit and decapsulation processing, and includes a
 dedicated eBPF program type for programmable processing of the GOB
 Payload. The eBPF program context exposes only the GOB Payload, so
