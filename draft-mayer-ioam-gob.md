@@ -113,11 +113,14 @@ is populated from the tail of the node data space toward its head,
 under the control of the RemainingLen field, legacy IOAM transit nodes
 can never reach the GOB region: the extension is transparent to such
 nodes by construction, and only the decapsulating node or collector
-needs to be GOB-aware. The GOB carries an explicit length and schema
-identifier in a trailer word, preserves the pre-allocated PTO
-processing model, and can be used to transport Extensible In-band
-Processing (EIP) Information Elements or other structured metadata
-formats.
+needs to be GOB-aware. In the default mode of operation, the GOB
+carries an explicit length and schema identifier in a trailer word; in
+an optimized namespace-implied mode, size and schema are bound to the
+IOAM-Namespace and the block consists of payload only, so that a
+4-octet opaque value is carried in exactly 4 octets. The GOB preserves
+the pre-allocated PTO processing model and can be used to transport
+Extensible In-band Processing (EIP) Information Elements or other
+structured metadata formats.
 
 --- middle
 
@@ -132,9 +135,13 @@ by IOAM-capable nodes along the path.
 This document defines an extension to the IOAM PTO called the Global
 Opaque Block (GOB). The GOB is a global metadata region that appears
 once in the PTO, at the tail of the option, after the pre-allocated
-node data space. The GOB is identified by a presence bit in the PTO
-header and carries its own length and schema fields in the last
-4-octet word of the option, referred to as the GOB Trailer.
+node data space. In the default mode of operation, the GOB is
+identified by a presence bit in the PTO header and carries its own
+length and schema fields in the last 4-octet word of the option,
+referred to as the GOB Trailer. In an optimized namespace-implied
+mode, presence, size and schema of the GOB are bound to the
+IOAM-Namespace, the trailer is omitted, and the block consists of
+payload only.
 
 The GOB enables the carriage of structured global metadata within the
 IOAM PTO, while preserving the existing PTO processing model for
