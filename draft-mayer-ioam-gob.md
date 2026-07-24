@@ -425,10 +425,14 @@ carries such a value:
   multiple of 4 octets, and the sizes of 4, 8, 12 and 16 octets are
   RECOMMENDED for standardized registrations;
 * the schema of the GOB payload is likewise implied by the namespace;
-* the G bit MUST be set to 1 and the Ver field MUST be set to 0,
-  exactly as in the default mode: the presence of the GOB remains
-  signaled in band, and a GOB-aware node distinguishes the two modes
-  by the Namespace-ID.
+* the presence of the GOB is determined by the Namespace-ID itself: a
+  GOB-aware node MUST treat the GOB as present regardless of the value
+  of the G bit. The encapsulating node SHOULD set the G bit to 1 (and
+  the Ver field to 0) as an in-band confirmation when the deployment
+  uses the Reserved octet extension of {{g-bit-ver}}; alternatively,
+  it MAY leave the Reserved octet at zero, obtaining a pure
+  namespace-based mode of operation that does not use the Reserved
+  octet at all.
 
 In this mode, the GOB occupies the last `GOB_SIZE` octets of the IOAM
 option, where `GOB_SIZE` is the implied size, and the validity check
@@ -447,7 +451,11 @@ efficient possible transport for it; a 16-octet record is carried in
 16 octets. Note that the fields defined by {{RFC9197}} keep their
 format and semantics regardless of the namespace value: the namespace
 only provides the interpretation context for octets that lie outside
-all such fields.
+all such fields. In particular, in the pure namespace-based variant,
+with the Reserved octet left at zero, the option is, on the wire, a
+plain Pre-allocated Trace Option whose pre-allocated space extends
+beyond the RemainingLen window: this variant can be deployed without
+any change to {{RFC9197}}.
 
 
 # Length and Alignment Rules
@@ -688,7 +696,10 @@ for `GOB_SIZE` octets when assessing path MTU constraints.
 The analysis in this section applies unchanged to the namespace-implied
 mode of {{namespace-implied}}: the GOB occupies the same tail region,
 outside the RemainingLen window, regardless of whether its size is
-described by the GOB Trailer or implied by the IOAM-Namespace.
+described by the GOB Trailer or implied by the IOAM-Namespace. In the
+pure namespace-based variant, with the Reserved octet left at zero,
+the option is additionally fully compliant with {{RFC9197}} as
+currently specified.
 
 
 # Processing Semantics
@@ -696,9 +707,9 @@ described by the GOB Trailer or implied by the IOAM-Namespace.
 This section specifies the behavior for the default, trailer-based
 mode of operation. In the namespace-implied mode, the same rules apply
 with the adjustments specified in {{namespace-implied}}: the presence
-of the GOB is signaled by the G bit as in the default mode, while its
-size and schema are derived from the Namespace-ID and the GOB Trailer
-is absent.
+of the GOB is determined by the Namespace-ID (with the G bit as
+optional in-band confirmation), its size and schema are derived from
+the Namespace-ID, and the GOB Trailer is absent.
 
 ## Ingress Node Behavior
 
@@ -947,13 +958,16 @@ entirely, instead of processing the node data space as it does under
 the codepoint-reuse approach.
 
 The namespace-implied mode of {{namespace-implied}} is orthogonal to
-the choice above: it uses the G bit under whichever of the two
-approaches is selected, and additionally relies on values of the
-existing "IOAM Namespace-ID" registry, where each registered (or
-operator-configured) GOB-implying value specifies the implied GOB size
-and schema. No further codepoints are required for it. A future
-version of this document may request such Namespace-ID registrations
-for standardized compact records.
+the choice above: it relies on values of the existing "IOAM
+Namespace-ID" registry, where each registered (or operator-configured)
+GOB-implying value specifies the implied GOB size and schema, and it
+can use the G bit as in-band confirmation under whichever of the two
+approaches is selected. Notably, its pure namespace-based variant,
+with the Reserved octet left at zero, requires neither the update of
+the Reserved octet nor a new codepoint: it can be deployed under
+{{RFC9197}} as currently specified. A future version of this document
+may request Namespace-ID registrations for standardized compact
+records.
 
 In addition, {{schema-semantics}} divides the 24-bit Schema value space
 into an operator-assigned range (0x000000 to 0x7FFFFF) and an
