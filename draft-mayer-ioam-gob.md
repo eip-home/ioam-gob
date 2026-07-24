@@ -407,6 +407,48 @@ IOAM option. Any final tail padding is added only to satisfy alignment
 requirements of the enclosing Hop-by-Hop Options header and lies
 outside the IOAM option.
 
+## Namespace-Implied GOB {#namespace-implied}
+
+The mechanism defined in the previous sections is self-describing: the
+presence of the GOB is signaled by the G bit, and its size and schema
+are carried in the GOB Trailer. This is the default mode of operation.
+
+As an optimization, a deployment MAY designate IOAM-Namespaces that
+imply the presence and the format of a GOB, referred to as
+GOB-implying namespaces. When the Namespace-ID field of the PTO
+carries such a value:
+
+* the option carries a GOB at the tail consisting of payload only:
+  the GOB Trailer is NOT present;
+* the GOB size is implied by the namespace, through configuration or
+  through the registration of the Namespace-ID value; it MUST be a
+  multiple of 4 octets, and the sizes of 4, 8, 12 and 16 octets are
+  RECOMMENDED for standardized registrations;
+* the schema of the GOB payload is likewise implied by the namespace;
+* the G bit MUST be set to 1 and the Ver field MUST be set to 0,
+  exactly as in the default mode: the presence of the GOB remains
+  signaled in band, and a GOB-aware node distinguishes the two modes
+  by the Namespace-ID.
+
+In this mode, the GOB occupies the last `GOB_SIZE` octets of the IOAM
+option, where `GOB_SIZE` is the implied size, and the validity check
+of {{internal-pto-offsets}} applies with the implied `GOB_SIZE`
+substituted for `4 * (GOB_Len + 1)`. All other processing rules apply
+unchanged, with presence, size and schema derived from a Namespace-ID
+lookup instead of being parsed from the packet.
+
+The namespace-implied mode is intended for standardized compact
+records and for hardware fast paths: the position and interpretation
+of the GOB are derived from a single Namespace-ID lookup, without
+parsing any length information in the packet, and the per-packet
+overhead of the trailer is removed entirely. In particular, a 4-octet
+opaque value is carried in exactly 4 octets, which is the most
+efficient possible transport for it; a 16-octet record is carried in
+16 octets. Note that the fields defined by {{RFC9197}} keep their
+format and semantics regardless of the namespace value: the namespace
+only provides the interpretation context for octets that lie outside
+all such fields.
+
 
 # Length and Alignment Rules
 
@@ -641,8 +683,22 @@ Section 4.4.1 of {{RFC9197}} relates RemainingLen to the path MTU for
 the node data space. An ingress node inserting a GOB MUST also account
 for `GOB_SIZE` octets when assessing path MTU constraints.
 
+## Applicability to Namespace-Implied GOBs
+
+The analysis in this section applies unchanged to the namespace-implied
+mode of {{namespace-implied}}: the GOB occupies the same tail region,
+outside the RemainingLen window, regardless of whether its size is
+described by the GOB Trailer or implied by the IOAM-Namespace.
+
 
 # Processing Semantics
+
+This section specifies the behavior for the default, trailer-based
+mode of operation. In the namespace-implied mode, the same rules apply
+with the adjustments specified in {{namespace-implied}}: the presence
+of the GOB is signaled by the G bit as in the default mode, while its
+size and schema are derived from the Namespace-ID and the GOB Trailer
+is absent.
 
 ## Ingress Node Behavior
 
@@ -759,6 +815,11 @@ The IANA-assigned range is intended for globally defined schemas
 specified in future documents, allowing new and interoperable GOB
 payload formats — for example, a registered schema identifying a
 sequence of EIP Information Elements.
+
+In the namespace-implied mode of {{namespace-implied}}, no Schema
+field is carried in the packet: the schema is bound to the
+IOAM-Namespace by configuration or registration, and the rules on the
+Schema field in this section apply to the trailer-based mode only.
 
 The Schema value 0xFFFFFF is reserved and indicates that no schema is
 associated with the GOB, consistent with the Opaque State Snapshot rule
@@ -884,6 +945,15 @@ weakens the main benefit of the tail placement: a legacy transit node
 that does not recognize the new codepoint would skip the option
 entirely, instead of processing the node data space as it does under
 the codepoint-reuse approach.
+
+The namespace-implied mode of {{namespace-implied}} is orthogonal to
+the choice above: it uses the G bit under whichever of the two
+approaches is selected, and additionally relies on values of the
+existing "IOAM Namespace-ID" registry, where each registered (or
+operator-configured) GOB-implying value specifies the implied GOB size
+and schema. No further codepoints are required for it. A future
+version of this document may request such Namespace-ID registrations
+for standardized compact records.
 
 In addition, {{schema-semantics}} divides the 24-bit Schema value space
 into an operator-assigned range (0x000000 to 0x7FFFFF) and an
