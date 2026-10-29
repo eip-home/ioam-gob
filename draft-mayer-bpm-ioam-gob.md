@@ -3,10 +3,10 @@ title: "Global Opaque Block for IOAM Pre-allocated Trace Option"
 abbrev: "IOAM GOB"
 category: exp
 
-docname: draft-mayer-ioam-gob-latest
+docname: draft-mayer-bpm-ioam-gob-latest
 submissiontype: IETF
 ipr: trust200902
-workgroup: IPPM
+workgroup: BPM
 keyword:
   - IOAM
   - IPv6
@@ -18,7 +18,7 @@ venue:
   mail: eip@cnit.it
   arch: http://postino.cnit.it/cgi-bin/mailman/private/eip/
   github: eip-home/ioam-gob
-  latest: https://eip-home.github.io/ioam-gob/draft-mayer-ioam-gob.html
+  latest: https://eip-home.github.io/ioam-gob/draft-mayer-bpm-ioam-gob.html
 
 stand_alone: yes
 smart_quotes: no
@@ -35,8 +35,8 @@ author:
     email: "stefano.salsano@uniroma2.it"
   - name: "Justin Iurman"
     ins: "J. Iurman"
-    organization: "University of Liege"
-    email: "justin.iurman@uliege.be"
+    organization: "6WIND"
+    email: "justin.iurman@gmail.com"
   - name: "Diego R. Lopez"
     ins: "D. R. Lopez"
     organization: "Telefonica"

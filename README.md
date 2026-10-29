@@ -2,15 +2,15 @@
 
 This is the working area for the individual Internet-Draft, "Global Opaque Block for IOAM Pre-allocated Trace Option".
 
-* [Editor's Copy (html)](https://eip-home.github.io/ioam-gob/#go.draft-mayer-ioam-gob.html)
-* [Editor's Copy (txt)](https://eip-home.github.io/ioam-gob/#go.draft-mayer-ioam-gob.txt)
+* [Editor's Copy (html)](https://eip-home.github.io/ioam-gob/#go.draft-mayer-bpm-ioam-gob.html)
+* [Editor's Copy (txt)](https://eip-home.github.io/ioam-gob/#go.draft-mayer-bpm-ioam-gob.txt)
 * [Editor's Copy reference page](https://eip-home.github.io/ioam-gob/)
 
 <!--
-* [Editor's Copy](https://eip-home.github.io/ioam-gob/#go.draft-mayer-ioam-gob.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-mayer-ioam-gob)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-mayer-ioam-gob)
-* [Compare Editor's Copy to Individual Draft](https://eip-home.github.io/ioam-gob/#go.draft-mayer-ioam-gob.diff)
+* [Editor's Copy](https://eip-home.github.io/ioam-gob/#go.draft-mayer-bpm-ioam-gob.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-mayer-bpm-ioam-gob)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-mayer-bpm-ioam-gob)
+* [Compare Editor's Copy to Individual Draft](https://eip-home.github.io/ioam-gob/#go.draft-mayer-bpm-ioam-gob.diff)
 -->
 
 
