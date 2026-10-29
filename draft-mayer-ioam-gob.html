@@ -29,26 +29,26 @@ the pre-allocated PTO processing model and can be used to transport
 Extensible In-band Processing (EIP) Information Elements or other
 structured metadata formats. 
     " name="description">
-<meta content="xml2rfc 3.34.0" name="generator">
+<meta content="xml2rfc 3.34.1" name="generator">
 <meta content="IOAM" name="keyword">
 <meta content="IPv6" name="keyword">
 <meta content="In-band telemetry" name="keyword">
 <meta content="Metadata" name="keyword">
 <meta content="draft-mayer-ioam-gob-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.34.0
-    Python 3.14.5
-    ConfigArgParse 1.7.5
+  xml2rfc 3.34.1
+    Python 3.14.8
+    ConfigArgParse 1.8.0
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.10.1
+    platformdirs 4.13.4
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.2
+    wcwidth 0.9.2
 -->
 <link href="draft-mayer-ioam-gob.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -84,7 +84,6 @@ structured metadata formats.
   src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: italic;
@@ -133,7 +132,6 @@ structured metadata formats.
   src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: normal;
@@ -198,7 +196,6 @@ structured metadata formats.
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
 }
 
 @font-face {
@@ -1067,11 +1064,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">IOAM GOB</td>
-<td class="right">July 2026</td>
+<td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Mayer, et al.</td>
-<td class="center">Expires 25 January 2027</td>
+<td class="center">Expires 2 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1079,17 +1076,17 @@ svg {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">WG Working Group</dd>
+<dd class="workgroup">IPPM</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
 <dd class="internet-draft">draft-mayer-ioam-gob-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-07-24" class="published">24 July 2026</time>
+<time datetime="2026-10-29" class="published">29 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-01-25">25 January 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-02">2 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1167,7 +1164,7 @@ structured metadata formats.<a href="#section-abstract-1" class="pilcrow">¶</a>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 25 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 2 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1184,7 +1181,10 @@ structured metadata formats.<a href="#section-abstract-1" class="pilcrow">¶</a>
             (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
             publication of this document. Please review these documents
             carefully, as they describe your rights and restrictions with
-            respect to this document.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="toc">
@@ -2263,7 +2263,7 @@ Schema values <span class="bcp14">MUST</span> preserve this reservation.<a href=
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-integration-with-eip" class="section-name selfRef">Integration with EIP</a>
       </h2>
 <p id="section-10-1">One important use of the GOB is the carriage of Extensible In-band
-Processing (EIP) Information Elements.<a href="#section-10-1" class="pilcrow">¶</a></p>
+Processing (EIP) Information Elements <span>[<a href="#draft-eip-arch" class="cite xref">draft-eip-arch</a>]</span>.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <p id="section-10-2">The GOB provides a natural container for EIP within the IOAM PTO because
 it offers a single global metadata region with explicit length and
 schema identification, distinct from the per-node trace data. This makes
@@ -2392,8 +2392,9 @@ indicate that no schema is associated with the GOB. A future version of
 this document is expected to request the creation of a "GOB Schema
 Identifiers" registry covering the IANA-assigned range.<a href="#section-13-6" class="pilcrow">¶</a></p>
 <p id="section-13-7">This version of the document does not request IANA actions. Future
-versions may request updates to the relevant IOAM or IPv6 registries,
-depending on which standardization approach is selected.<a href="#section-13-7" class="pilcrow">¶</a></p>
+versions may request updates to the relevant IOAM <span>[<a href="#IANA-ioam-types" class="cite xref">IANA-ioam-types</a>]</span>
+or IPv6 <span>[<a href="#IANA-ipv6-parameters" class="cite xref">IANA-ipv6-parameters</a>]</span> registries, depending on which
+standardization approach is selected.<a href="#section-13-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
@@ -2470,7 +2471,12 @@ depending on which standardization approach is selected.<a href="#section-13-7" 
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">TBD.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The authors thank Alexander Clemm, Ramon Bister and Severin Dellsperger
+for the discussions on the relationship between the GOB and the IOAM
+Aggregation Trace and Template Options, and for hosting the GOB
+demonstration within their IETF 126 Hackathon project. The authors
+also thank Giulio Sidoretti for his contribution to the Linux
+implementation.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

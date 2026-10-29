@@ -2,15 +2,15 @@
 
 
 
-WG Working Group                                                A. Mayer
+IPPM                                                            A. Mayer
 Internet-Draft             Univ. of Rome Tor Vergata / CNIT / Common Net
 Intended status: Experimental                                 S. Salsano
-Expires: 25 January 2027                Univ. of Rome Tor Vergata / CNIT
+Expires: 2 May 2027                     Univ. of Rome Tor Vergata / CNIT
                                                                J. Iurman
                                                      University of Liege
                                                              D. R. Lopez
                                                               Telefonica
-                                                            24 July 2026
+                                                         29 October 2026
 
 
         Global Opaque Block for IOAM Pre-allocated Trace Option
@@ -69,7 +69,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 January 2027.
+   This Internet-Draft will expire on 2 May 2027.
 
 Copyright Notice
 
@@ -80,7 +80,10 @@ Copyright Notice
    Provisions Relating to IETF Documents (https://trustee.ietf.org/
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
-   and restrictions with respect to this document.
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
 
 Table of Contents
 
@@ -862,7 +865,7 @@ Offset      0                   1                   2                   3
 10.  Integration with EIP
 
    One important use of the GOB is the carriage of Extensible In-band
-   Processing (EIP) Information Elements.
+   Processing (EIP) Information Elements [draft-eip-arch].
 
    The GOB provides a natural container for EIP within the IOAM PTO
    because it offers a single global metadata region with explicit
@@ -995,8 +998,9 @@ Offset      0                   1                   2                   3
    Identifiers" registry covering the IANA-assigned range.
 
    This version of the document does not request IANA actions.  Future
-   versions may request updates to the relevant IOAM or IPv6 registries,
-   depending on which standardization approach is selected.
+   versions may request updates to the relevant IOAM [IANA-ioam-types]
+   or IPv6 [IANA-ipv6-parameters] registries, depending on which
+   standardization approach is selected.
 
 14.  References
 
@@ -1065,7 +1069,12 @@ Offset      0                   1                   2                   3
 
 Acknowledgments
 
-   TBD.
+   The authors thank Alexander Clemm, Ramon Bister and Severin
+   Dellsperger for the discussions on the relationship between the GOB
+   and the IOAM Aggregation Trace and Template Options, and for hosting
+   the GOB demonstration within their IETF 126 Hackathon project.  The
+   authors also thank Giulio Sidoretti for his contribution to the Linux
+   implementation.
 
 Authors' Addresses
 
