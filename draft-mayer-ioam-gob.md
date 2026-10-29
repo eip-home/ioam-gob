@@ -4,10 +4,9 @@ abbrev: "IOAM GOB"
 category: exp
 
 docname: draft-mayer-ioam-gob-latest
-submissiontype: independent
+submissiontype: IETF
 ipr: trust200902
-area: AREA
-workgroup: WG Working Group
+workgroup: IPPM
 keyword:
   - IOAM
   - IPv6
@@ -851,7 +850,7 @@ Schema values MUST preserve this reservation.
 # Integration with EIP
 
 One important use of the GOB is the carriage of Extensible In-band
-Processing (EIP) Information Elements.
+Processing (EIP) Information Elements {{draft-eip-arch}}.
 
 The GOB provides a natural container for EIP within the IOAM PTO because
 it offers a single global metadata region with explicit length and
@@ -861,7 +860,7 @@ rather than node-local.
 
 Earlier work explored the integration of EIP into the IOAM framework
 through a different approach based on IOAM data fields
-[salsano25cscn]. The GOB-based approach defined in this document
+{{salsano25cscn}}. The GOB-based approach defined in this document
 provides an alternative integration model based on a pre-allocated
 global metadata region within the PTO.
 
@@ -986,12 +985,18 @@ this document is expected to request the creation of a "GOB Schema
 Identifiers" registry covering the IANA-assigned range.
 
 This version of the document does not request IANA actions. Future
-versions may request updates to the relevant IOAM or IPv6 registries,
-depending on which standardization approach is selected.
+versions may request updates to the relevant IOAM {{IANA-ioam-types}}
+or IPv6 {{IANA-ipv6-parameters}} registries, depending on which
+standardization approach is selected.
 
 --- back
 
 # Acknowledgments
 {:numbered="false"}
 
-TBD.
+The authors thank Alexander Clemm, Ramon Bister and Severin Dellsperger
+for the discussions on the relationship between the GOB and the IOAM
+Aggregation Trace and Template Options, and for hosting the GOB
+demonstration within their IETF 126 Hackathon project. The authors
+also thank Giulio Sidoretti for his contribution to the Linux
+implementation.
